@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025期货市场回顾：那些让人心跳加速的交易时刻</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0b0f;
+            --bg-secondary: #12141a;
+            --bg-tertiary: #1a1d26;
+            --bg-card: #181b24;
+            --accent-gold: #d4a853;
+            --accent-gold-dim: #a68535;
+            --accent-cyan: #4ecdc4;
+            --accent-red: #e74c3c;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a1a1aa;
+            --border-color: #2d3142;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7; /* 增加行高提升可读性 */
+            overflow-x: hidden;
+            font-size: 16px; /* 提升全局基准字号 */
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-gold-dim); border-radius: 3px; }
+
+        .section { padding: 60px 5%; position: relative; }
+
+        /* Hero */
+        #hero { min-height: 95vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at 50% 50%, rgba(212, 168, 83, 0.1) 0%, transparent 70%); }
+        .hero-title { font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 900; background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
+        .typewriter { border-right: 3px solid var(--accent-gold); white-space: nowrap; overflow: hidden; animation: typing 3.5s steps(40, end), blink .75s step-end infinite; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink { 50% { border-color: transparent } }
+
+        /* Stats */
+        .stat-item { background: var(--bg-card); border: 1px solid var(--border-color); padding: 30px; border-radius: 20px; }
+        .stat-number { font-size: 3.5rem; font-weight: 900; color: var(--accent-gold); line-height: 1; margin-bottom: 10px;}
+
+        /* Carousel */
+        .carousel-container { position: relative; overflow: hidden; padding: 20px 0; }
+        .carousel-track { display: flex; gap: 24px; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .carousel-item { min-width: 340px; max-width: 340px; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); overflow: hidden; display: flex; flex-direction: column; }
+        
+        @media (min-width: 768px) {
+            .carousel-item { min-width: 420px; max-width: 420px; }
+        }
+
+        .carousel-image { 
+            height: 240px; 
+            background: #000; 
+            position: relative; 
+            overflow: hidden; 
+            cursor: zoom-in; /* 提示可以点击放大 */
+        }
+        .carousel-image img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s; }
+        .carousel-image:hover img { transform: scale(1.05); }
+        
+        .moment-content { padding: 28px; border-top: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Timeline */
+        .timeline { position: relative; max-width: 1000px; margin: 0 auto; padding-left: 50px; }
+        .timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #2d3142; }
+        
+        .month-label { font-size: 1.5rem; font-weight: 900; color: var(--accent-gold); margin: 50px 0 25px -42px; display: flex; align-items: center; gap: 15px; }
+        .month-label::before { content: ''; width: 14px; height: 14px; background: var(--bg-primary); border: 3px solid var(--accent-gold); border-radius: 50%; z-index: 2; }
+
+        .timeline-event { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; margin-bottom: 35px; position: relative; }
+        
+        .logic-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 14px; color: var(--text-secondary); margin: 15px 0; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; }
+        .logic-arrow { color: var(--accent-gold); font-size: 12px; }
+
+        .tag-pill { font-size: 13px; padding: 4px 12px; border-radius: 6px; background: rgba(212, 168, 83, 0.15); color: var(--accent-gold); margin-right: 8px; font-weight: 600; }
+
+        /* Lightbox (图片大图弹窗) */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+        #lightbox img { max-width: 95%; max-height: 90%; object-fit: contain; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+
+        /* Animation */
+        .fade-in { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="预览图">
+    </div>
+
+    <!-- Hero -->
+    <section id="hero" class="section">
+        <div class="max-w-4xl px-4">
+            <!-- 关键调整：调大文字和间距 -->
+            <div class="inline-block px-8 py-2 mb-8 text-base md:text-lg tracking-[0.2em] border-2 border-yellow-600/50 rounded-full text-yellow-500 bg-yellow-500/10 font-black uppercase">
+                金十期货APP独家制作
+            </div>
+            <h1 class="hero-title mb-8">2025期货大事回顾<br>那些惊心动魄的时刻</h1>
+            <p class="text-xl md:text-2xl text-gray-400 mb-14 h-10"><span class="typewriter">政策博弈、供需错位与新品种上市</span></p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="stat-item fade-in">
+                    <div class="stat-number" data-target="10">0</div>
+                    <div class="text-base text-gray-500 tracking-widest uppercase font-bold">年度行情瞬间</div>
+                </div>
+                <div class="stat-item fade-in" style="transition-delay: 0.2s;">
+                    <div class="stat-number" data-target="7">0</div>
+                    <div class="text-base text-gray-500 tracking-widest uppercase font-bold">重要核心事件</div>
+                </div>
+                <div class="stat-item fade-in" style="transition-delay: 0.4s;">
+                    <div class="stat-number" data-target="5">0</div>
+                    <div class="text-base text-gray-500 tracking-widest uppercase font-bold">年度新品种</div>
+                </div>
+            </div>
+            <a href="#moments" class="px-12 py-5 bg-yellow-500 text-black text-lg font-black rounded-2xl hover:scale-105 transition shadow-2xl shadow-yellow-500/30 uppercase tracking-widest">开始重温之旅</a>
+        </div>
+    </section>
+
+    <!-- 年度Top行情瞬间 -->
+    <section id="moments" class="section bg-[#0d0e12]">
+        <div class="mb-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div>
+                <h6 class="text-yellow-500 font-bold tracking-[0.2em] mb-3 text-lg">TOP MARKET MOMENTS</h6>
+                <h2 class="text-4xl md:text-5xl font-black">年度十大行情瞬间</h2>
+            </div>
+            <div class="flex gap-5">
+                <button onclick="moveCarousel(-1)" class="w-14 h-14 rounded-full border-2 border-gray-800 flex items-center justify-center hover:bg-yellow-500 hover:text-black transition"><i class="fas fa-chevron-left text-lg"></i></button>
+                <button onclick="moveCarousel(1)" class="w-14 h-14 rounded-full border-2 border-gray-800 flex items-center justify-center hover:bg-yellow-500 hover:text-black transition"><i class="fas fa-chevron-right text-lg"></i></button>
+            </div>
+        </div>
+
+        <div class="carousel-container">
+            <div class="carousel-track" id="topMomentsTrack">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 全年时间线全纪录 -->
+    <section id="timeline-section" class="section">
+        <div class="text-center mb-16">
+            <h6 class="text-yellow-500 font-bold tracking-[0.2em] mb-3 text-lg">FULL YEAR RECORDS</h6>
+            <h2 class="text-4xl md:text-5xl font-black">全年焦点时间线</h2>
+        </div>
+
+        <div class="timeline" id="fullTimeline">
+            <!-- Injected via JS -->
+        </div>
+    </section>
+
+    <!-- 制度与新品种 -->
+    <section id="info" class="section bg-[#0d0e12]">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <div>
+                <h3 class="text-3xl font-bold mb-10 flex items-center gap-4"><i class="fas fa-gavel text-yellow-500"></i> 重要制度与监管</h3>
+                <div class="space-y-6">
+                    <div class="timeline-event !m-0 !mb-6">
+                        <h4 class="font-bold text-2xl mb-4 text-white">期货公司分类评价规定（2025年修订）</h4>
+                        <div class="grid grid-cols-2 gap-4 mb-6 text-base">
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">发布机构</span>证监会</div>
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">执行时间</span>2025年9月12日</div>
+                        </div>
+                        <p class="text-base text-gray-400 border-t border-gray-800 pt-4">期货公司年度“分类评价”规则升级：完善扣分机制与加分体系，调整专项评价方向（服务国家战略、党建文化、信息技术等），引导行业更重视合规风控与服务实体经济能力。</p>
+                    </div>
+                    <div class="timeline-event !m-0 !mb-6">
+                        <h4 class="font-bold text-2xl mb-4 text-white">程序化交易管理规定（试行）</h4>
+                        <div class="grid grid-cols-2 gap-4 mb-6 text-base">
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">发布机构</span>证监会</div>
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">执行时间</span>2025年10月9日</div>
+                        </div>
+                        <p class="text-base text-gray-400 border-t border-gray-800 pt-4">五大期货交易所同日发布配套《程序化交易管理办法》，将监管要求细化到系统接入、主机托管、席位使用、交易监测与风控等环节，并设置过渡期安排，推动“规定”落地执行。</p>
+                    </div>
+                    <div class="timeline-event !m-0">
+                        <h4 class="font-bold text-2xl mb-4 text-white">期货公司互联网营销管理规定</h4>
+                        <div class="grid grid-cols-2 gap-4 mb-6 text-base">
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">发布机构</span>中期协</div>
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">执行时间</span>2025年10月9日起施行</div>
+                        </div>
+                        <p class="text-base text-gray-400 border-t border-gray-800 pt-4">针对直播、短视频、社媒投放等互联网营销场景，建立全过程合规框架：明确营销范围与禁止性行为，强化营销内容审核、账号与人员管理，并对第三方合作及客户保护提出更细要求。</p>
+                    </div>
+                    <div class="timeline-event !m-0">
+                        <h4 class="font-bold text-2xl mb-4 text-white">期货做市交易业务管理规则</h4>
+                        <div class="grid grid-cols-2 gap-4 mb-6 text-base">
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">发布机构</span>中期协</div>
+                            <div><span class="block text-xs text-yellow-500 uppercase font-bold mb-1">执行时间</span>2025年12月1日</div>
+                        </div>
+                        <p class="text-base text-gray-400 border-t border-gray-800 pt-4">针对直播、短视频、社媒投放等互联网营销场景，建立全过程合规框架：明确营销范围与禁止性行为，强化营销内容审核、账号与人员管理，并对第三方合作及客户保护提出更细要求。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-3xl font-bold mb-10 flex items-center gap-4"><i class="fas fa-rocket text-yellow-500"></i> 年度新品种</h3>
+                <div class="space-y-6">
+                    <div class="timeline-event !m-0 !mb-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-2xl text-white">铸造铝合金期货/期权</h4>
+                            <span class="tag-pill">上期所</span>
+                        </div>
+                        <p class="text-sm text-yellow-600 mb-3 font-mono">上市时间：2025年6月10日</p>
+                        <p class="text-base text-gray-400">铸造铝合金以废铝为主要原料，是再生铝循环利用的关键形态。上期所于2025年6月10日挂牌铸造铝合金期货，并在当日夜盘时段推出配套期权，首批合约覆盖AD2511至AD2605，形成更完整的套保与定价工具组合。</p>
+                    </div>
+                    <div class="timeline-event !m-0 !mb-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-2xl text-white">纯苯期货/期权</h4>
+                            <span class="tag-pill">大商所</span>
+                        </div>
+                        <p class="text-sm text-yellow-600 mb-3 font-mono">上市时间：2025年7月8日</p>
+                        <p class="text-base text-gray-400">围绕芳烃产业链核心原料，帮助上下游在价格波动中进行风险管理，完善化工品定价体系。</p>
+                    </div>
+                    <div class="timeline-event !m-0 !mb-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-2xl text-white">丙烯期货/期权</h4>
+                            <span class="tag-pill">郑商所</span>
+                        </div>
+                        <p class="text-sm text-yellow-600 mb-3 font-mono">上市时间：2025年7月22日</p>
+                        <p class="text-base text-gray-400">丙烯是烯烃与聚烯烃链条的关键中间体，期货上市有助于形成更连续的产业链风险管理工具。</p>
+                    </div>
+                    <div class="timeline-event !m-0">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-2xl text-white">胶版印刷纸期货</h4>
+                            <span class="tag-pill">上期所</span>
+                        </div>
+                        <p class="text-sm text-yellow-600 mb-3 font-mono">上市时间：2025年9月10日</p>
+                        <p class="text-base text-gray-400">上期所于2025年9月10日挂牌胶版印刷纸期货，首批覆盖OP2601至OP2608，并配套夜盘交易安排，旨在为印刷纸相关企业提供更标准化、可对冲的价格风险管理工具。</p>
+                    </div>
+                    <div class="timeline-event !m-0">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-2xl text-white">铂、钯期货/期权</h4>
+                            <span class="tag-pill">广期所</span>
+                        </div>
+                        <p class="text-sm text-yellow-600 mb-3 font-mono">上市时间：2025年11月27日</p>
+                        <p class="text-base text-gray-400">广期所于2025年11月27日挂牌铂、钯期货，并同步推进配套期权安排。作为铂族金属，铂、钯在汽车与工业领域应用广泛，相关衍生品的推出有助于产业链更系统地管理价格波动风险，并完善国内绿色金属品种体系。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 text-center border-t border-gray-800">
+        <h2 class="text-3xl font-black mb-4">2025 期货大事记回顾</h2>
+        <p class="text-gray-500 mb-12 text-lg">金十期货APP独家制作 · 深度年度回顾系列</p>
+        <div class="max-w-3xl mx-auto px-4">
+            <div class="p-8 bg-red-500/5 border border-red-500/10 rounded-2xl text-left text-sm text-gray-500 leading-relaxed">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                <strong>风险提示：</strong> 本页面所展示的历史行情走势、市场事件回顾及相关政策解读，仅用于信息展示与学习参考，不构成任何形式的投资建议、交易建议或收益承诺。期货市场波动较大，交易风险较高，请投资者充分了解相关风险，并根据自身风险承受能力谨慎决策。
+            </div>
+        </div>
+
+        <!-- APP二维码区域 -->
+        <div class="mt-16 flex flex-col items-center">
+            <div class="p-3 bg-white rounded-2xl shadow-2xl shadow-yellow-500/10 mb-4">
+                <img src="https://qihuo.jin10.com/vip/watch/img/qihuo_qrcode.1bb13d91.png" alt="金十期货APP二维码" class="w-32 h-32">
+            </div>
+            <p class="text-yellow-500 font-bold tracking-widest text-sm uppercase">扫码下载金十期货APP</p>
+            <p class="text-gray-600 text-xs mt-2">及时获取更多期货热点资讯</p>
+        </div>
+    </footer>
+
+    <script>
+        // 年度十大行情瞬间数据
+        const topMoments = [
+            {
+                date: "2025/06/13 - 06/25",
+                title: "原油：地缘溢价的“挤入—挤出”",
+                desc: "6月中旬在地缘风险快速升温背景下，内盘SC原油主力一度强势拉升并触及涨停，市场对中东供应扰动的“风险溢价”被集中定价，盘面呈现典型的情绪驱动型加速上冲。随后因特朗普宣布以色列—伊朗停火、市场对中东供给风险的担忧迅速降温，内盘 SC 原油与燃料油出现跌停，单日跌幅约 9.27%。",
+                tags: ["SC原油", "地缘溢价", "V型反转"],
+                img: "https://img.jin10.com/news/25/12/DT4dCL1tg0CbIqGXB_2vA.jpg/lite"
+            },
+            {
+                date: "2025/06/25 - 07/24",
+                title: "多晶硅：一个月走出“大牛段”",
+                desc: "多晶硅主力从约 30045 元/吨拉到约 53765 元/吨，区间最大涨幅超 78%。广期所随后出台调保、限额等一系列降温措施。",
+                tags: ["多晶硅", "广期所", "波幅纪录"],
+                img: "https://img.jin10.com/news/25/12/05Ea9WCP16mAaZceKf7fp.jpg/lite"
+            },
+            {
+                date: "2025/07/22",
+                title: "“反内卷”引爆工业品涨停潮",
+                desc: "据证券时报报道，7月22日，商品期货午后大爆发，焦煤、焦炭、多晶硅、工业硅、玻璃、纯碱等6个品种涨停，市场情绪高涨。市场传出国家能源局开展煤炭核查的消息，对超能力生产的煤炭一律责令停产整改，被业内认为煤炭“反内卷”开启，这引发午后黑色系的狂飙。",
+                tags: ["涨停潮", "黑色系", "光伏链"],
+                img: "https://img.jin10.com/news/25/12/ljEGqy_Vmx5iEzfkcbkTy.jpg/lite"
+            },
+            {
+                date: "2025/07 下旬",
+                title: "焦煤：连续拉升与“降额令”",
+                desc: "焦煤主力连续上涨，交易所随后对单日开仓量实施约束。政策背景为煤炭控产与检查趋严。",
+                tags: ["焦煤", "风控对抗", "单日限额"],
+                img: "https://img.jin10.com/news/25/12/WOaqQu6hhgjo9MRhY1nwx.jpg/lite"
+            },
+            {
+                date: "2025/07/28",
+                title: "“大回调”：热门品种集体跌停",
+                desc: "7月28日国内商品期货收盘出现“瀑布式”回撤：焦煤、玻璃、焦炭、纯碱、工业硅、碳酸锂等主力合约集体跌停，多晶硅等品种亦出现显著回落，资金撤退与波动扩散特征明显。",
+                tags: ["集体跌停", "多头回补", "风险释放"],
+                img: "https://img.jin10.com/news/25/12/pNQcYzrEfBmmdsWHuXKkh.jpg/lite"
+            },
+            {
+                date: "2025/10 - 12",
+                title: "集运欧线：波动率资产教科书",
+                desc: "近月合约出现单日大跌 8% 与盘中触及涨停并存。据上海国际能源交易中心公告，为应对高波动环境下的交易拥挤与风险聚集，INE对相关合约交易限额进行动态调整（如将日内开仓限额收紧至200手），以稳定市场运行。",
+                tags: ["集运欧线", "INE", "高波动率"],
+                img: "https://img.jin10.com/news/25/12/DONqdul0cntDJAnO5rPIP.jpg/lite"
+            },
+            {
+                date: "2025/11 - 12",
+                title: "碳酸锂：供给担忧引发爆拉",
+                desc: "据路透社报道，12月中旬“宜春拟注销过期采矿许可证”的相关消息引发供给扰动预期，碳酸锂期货主力在12月17日盘中快速冲高，收盘上涨约7.61%，体现出锂电链对政策与供给线索的高敏感度。",
+                tags: ["碳酸锂", "供给扰动", "广期所"],
+                img: "https://img.jin10.com/news/25/12/coajARJshzfDT507LnP0s.jpg/lite"
+            },
+            {
+                date: "2025/12 中旬",
+                title: "铂/钯：上市后的连板式上冲",
+                desc: "铂、钯期货合约于2025年11月27日起上市交易（首批合约PT2606等、PD2606等），为贵金属板块提供了新的风险管理与定价工具。12月下旬铂、钯期货在资金追捧与板块联动下多次触及涨停（约7%），并与金银走强形成共振。据广州期货交易所公告，为防范高波动阶段的交易风险，交易所对铂、钯相关合约交易保证金与交易限额等安排进行动态调整与提示。",
+                tags: ["铂钯", "贵金属联动", "广期所"],
+                img: "https://img.jin10.com/news/25/12/S6YUgaZMSz_R99iSiOi3p.jpg/lite"
+            },
+            {
+                date: "2025/12/18 - 12/23",
+                title: "沪锡：三年新高与协会“降温”",
+                desc: "12月18日前后沪锡主力触及约33.9万元/吨的阶段高位，价格快速拉升引发产业链对成本与履约风险的集中关注。12月23日，中国有色金属工业协会锡业分会发布倡议称，当前锡价急速拉升“已完全背离产业基本面”，“价格的非理性上涨已经对产业链供应链造成冲击”，并提示上游与下游企业均面临经营扰动与风险外溢。",
+                tags: ["沪锡", "三年新高", "协会干预"],
+                img: "https://img.jin10.com/news/25/12/yhHeBjGzyT8Tgmr0Tw_5y.jpg/lite"
+            },
+            {
+                date: "2025/12/23",
+                title: "沪银：刷新历史记录并限仓",
+                desc: "沪银期货突破 16000 元/千克历史高点。上期所明确自12月23日夜盘起，对白银期货AG2602合约日内开仓交易最大数量作出限制（如对客户设置日内开仓最大数量）",
+                tags: ["沪银", "历史纪录", "上期所"],
+                img: "https://img.jin10.com/news/25/12/G4O4uiDePXcK6lhYCZMf4.jpg/lite"
+            }
+        ];
+
+        const timelineData = [
+            { month: "2025年3月", date: "3月15日", title: "Bisie 锡矿宣布停产", category: "沪锡", logic: ["供给中断", "现货紧张", "期限结构Back", "库存去化预期"], pills: ["沪锡", "跳空", "涨跌停"], source: "矿业新闻 2025-03-15", content: "刚果（金）Bisie 锡矿因安全原因宣布停产，全球锡矿供给预期收缩，沪锡价格快速上行。", img: "https://img.jin10.com/news/25/12/AQXBqbAln3gIIe6359gyg.jpg/lite" },
+            { month: "2025年4月", date: "4月9日", title: "对等关税政策宣布", category: "有色 | 农产品", logic: ["预期冲击", "现货价格波动", "资金流向变化"], pills: ["沪铜", "沪铝", "螺纹钢", "豆粕"], source: "新华网 2025-04-09", content: "据新华社报道，美国总统特朗普2日在白宫签署两项关于所谓“对等关税”的行政令，宣布美国对贸易伙伴设立10%的“最低基准关税”，并对某些贸易伙伴征收更高关税。外部宏观因素变动引发大宗商品震荡，有色金属与农产品板块波动显著放大。", img: "https://img.jin10.com/news/25/12/8_vrDUgwbFlQDhiUMc5iB.jpg/lite" },
+            { month: "2025年7月", date: "7月1日", title: "“反内卷”会议信号传导", category: "黑色系", logic: ["政策预期", "供给收缩预期", "远月升水"], pills: ["螺纹钢", "热卷", "玻璃", "纯碱"], source: "新华网 2025-07-01", content: "据新华社报道，中央财经委员会第六次会议7月1日上午召开。会议强调，纵深推进全国统一大市场建设，要聚焦重点难点，依法依规治理企业低价无序竞争，引导企业提升产品品质，推动落后产能有序退出。市场认为钢铁等产能过剩行业供给侧逻辑再起。", img: "https://img.jin10.com/news/24/07/C8VW3LQNYbzcBOJmWHkgM.png" },
+            { month: "2025年8月", date: "8月10日", title: "宁德枧下窝锂矿停产", category: "碳酸锂", logic: ["供给扰动", "库存预期变化", "价格反弹"], pills: ["碳酸锂", "放量", "预期差"], source: "路透社 2025-08-10", content: "中国电池制造龙头宁德时代位于江西的一座主力锂矿因采矿许可证问题停产，引发市场对锂供应紧缩的担忧，锂碳酸盐期货主力合约单日上涨逾8%。", img: "https://img.jin10.com/gallary/25/07/MTfiGPSQOhOoesHmzYvPf.png" },
+            { month: "2025年10月", date: "10月28日夜盘", title: "三大化工品月均价期货上市", category: "化工 | 工具创新", logic: ["贴近现货贸易", "消除短期波动", "完善风险管理"], pills: ["LLDPE", "PVC", "PP", "月均价"], source: "大商所官网", content: "线型低密度聚乙烯（LLDPE）、聚氯乙烯（PVC）、聚丙烯（PP）三大化工品的月均价期货合约在大商所挂牌。该工具作为结算型工具，更贴近现货贸易结算和产业库存管理，有利于消除短期波动噪音，为现货定价提供更稳定指标。", img: "https://img.jin10.com/news/25/01/3AXdwVTNffR0n6TbfloSs.png/lite" },
+            { month: "2025年12月", date: "12月中旬", title: "铂、钯期货进入强势行情", category: "贵金属 | 新品种", logic: ["新品种首秀", "资金关注度提升", "国际市场联动"], pills: ["铂金", "钯金", "广期所", "涨停"], source: "交易所官网、新华财经", content: "自11月27日在广期所上市以来，铂、钯期货表现强劲。12月中旬，主力合约连续上涨并在22-23日触及涨停或新高。反映了供需预期与资金热情，显示出中国市场新品种与全球定价体系的联动增强。", img: "https://img.jin10.com/gallary/25/07/nn0bKdaZQbreL5WrfNygc.png" },
+            { month: "", date: "12月中旬", title: "南美大豆丰产预期强烈", category: "农产品", logic: ["全球粮食供给拐点", "巴西大豆创纪录产量", "期货价格偏弱", "供给链格局重构"], pills: ["南美大豆", "巴西", "供给宽松", "CBOT联动"], source: "路透社等公开信息", content: "截至2025年12月中旬，市场普遍预期巴西2025/26年度大豆将迎来创纪录丰产。全球大豆供应整体偏宽松，导致CBOT大豆及国内豆粕期货价格持续承压。巴西对华出口占比高企，反映出全球大宗农产品供给端的强劲增长态势。", img: "https://img.jin10.com/news/24/12/vEWUSo5Sga7AVgjSTI0EQ.png/lite" },
+            { month: "", date: "12月17日", title: "供给担忧引发锂价爆拉", category: "能源金属", logic: ["采矿证注销传闻", "供给收缩预期", "价格即时反应"], pills: ["碳酸锂", "宜春", "涨幅超7%"], source: "路透社等公开信息", content: "因江西省拟撤销部分采矿许可证的消息引发市场对锂供应的担忧，碳酸锂期货主力合约价格一度升至全年高点。体现出供给侧变化对期货价格的即时影响。", img: "https://img.jin10.com/news/24/08/A2Rvam828o99yvs43QhRM.png/lite" },
+            { month: "", date: "12月23日", title: "国际现货黄金创历史新高", category: "贵金属 | 宏观避险", logic: ["避险情绪主导", "价格破位效应", "国内外联动"], pills: ["现货黄金", "历史新高", "避险", "饰品金破千"], source: "市场公开信息", content: "2025年12月23日，国际现货黄金价格盘中及收盘均创历史新高。伦敦现货黄金一度突破4497美元/盎司，国内黄金价格随之突破千元大关。受地缘政治不确定性、美联储降息预期及央行买入等多重因素共振，黄金成为2025年全球最瞩目的避险资产。", img: "https://img.jin10.com/gallary/25/07/yDNVjcuXLibsK2JO-3OVN.png/lite" }
+        ];
+
+        // 灯箱功能
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = src;
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // 禁止滚动
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function initTopMoments() {
+            const track = document.getElementById('topMomentsTrack');
+            topMoments.forEach((m) => {
+                const div = document.createElement('div');
+                div.className = 'carousel-item';
+                div.innerHTML = `
+                    <div class="carousel-image" onclick="openLightbox('${m.img}')">
+                        <img src="${m.img}" alt="${m.title}">
+                    </div>
+                    <div class="moment-content">
+                        <span class="text-sm text-yellow-500 font-mono font-bold uppercase mb-2 block">${m.date}</span>
+                        <h4 class="text-2xl font-bold mb-5 leading-tight text-white">${m.title}</h4>
+                        <p class="text-base text-gray-400 mb-8 leading-relaxed">${m.desc}</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${m.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                track.appendChild(div);
+            });
+        }
+
+        function initTimeline() {
+            const container = document.getElementById('fullTimeline');
+            timelineData.forEach(ev => {
+                if(ev.month) {
+                    const monthDiv = document.createElement('div');
+                    monthDiv.className = 'month-label fade-in';
+                    monthDiv.innerText = ev.month;
+                    container.appendChild(monthDiv);
+                }
+                const div = document.createElement('div');
+                div.className = 'timeline-event fade-in';
+                div.innerHTML = `
+                    <div class="absolute top-6 right-6 text-xs text-yellow-500/50 font-bold border border-yellow-500/30 px-2 py-1 rounded">${ev.category}</div>
+                    <span class="text-sm font-mono text-gray-500 font-bold uppercase">${ev.date}</span>
+                    <h4 class="text-2xl font-bold mt-2 text-white">${ev.title}</h4>
+                    <p class="text-gray-400 text-base mt-4 leading-relaxed">${ev.content}</p>
+                    <div class="logic-flow">
+                        ${ev.logic.map((l, i) => `<span>${l}</span>${i < ev.logic.length - 1 ? '<i class="fas fa-arrow-right logic-arrow"></i>' : ''}`).join('')}
+                    </div>
+                    <div class="w-full h-48 bg-black rounded-xl my-5 overflow-hidden border border-gray-800 cursor-zoom-in" onclick="openLightbox('${ev.img}')">
+                        <img src="${ev.img}" class="w-full h-full object-cover opacity-80 hover:scale-105 transition duration-500" alt="${ev.title}">
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${ev.pills.map(p => `<span class="tag-pill">${p}</span>`).join('')}
+                    </div>
+                    <div class="text-xs text-gray-600 mt-4 font-mono">SOURCE: ${ev.source}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        let currentPos = 0;
+        function moveCarousel(dir) {
+            const track = document.getElementById('topMomentsTrack');
+            const item = document.querySelector('.carousel-item');
+            const cardWidth = item.offsetWidth + 24;
+            const containerWidth = document.querySelector('.carousel-container').offsetWidth;
+            const totalWidth = topMoments.length * cardWidth;
+            
+            currentPos += dir * -cardWidth;
+            
+            // 边界控制
+            if (currentPos > 0) currentPos = 0;
+            if (currentPos < -(totalWidth - containerWidth)) currentPos = -(totalWidth - containerWidth);
+            
+            track.style.transform = `translateX(${currentPos}px)`;
+        }
+
+        function startCounters() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        const num = entry.target;
+                        const target = parseInt(num.dataset.target);
+                        let current = 0;
+                        const timer = setInterval(() => {
+                            current += target / 30;
+                            if (current >= target) { num.innerText = target; clearInterval(timer); }
+                            else num.innerText = Math.floor(current);
+                        }, 40);
+                        observer.unobserve(num);
+                    }
+                });
+            });
+            document.querySelectorAll('.stat-number').forEach(n => observer.observe(n));
+        }
+
+        function handleScroll() {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight * 0.9) el.classList.add('visible');
+            });
+        }
+
+        window.onload = () => {
+            initTopMoments();
+            initTimeline();
+            startCounters();
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+        };
+    </script>
+</body>
+</html>
