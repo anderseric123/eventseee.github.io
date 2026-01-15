@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期货多空力量全景博弈图 - 专业版</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Roboto:wght@500;700&display=swap');
+
+        :root {
+            --red-color: #e60012;
+            --green-color: #009944;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --primary-color: #263238;
+            --accent-color: #007bff;
+            
+            /* 阵营标识色 */
+            --color-industry: #0277bd;
+            --color-zhejiang: #7b1fa2;
+            --color-foreign: #ef6c00;
+            --color-retail: #00897b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部看板 */
+        header {
+            background: linear-gradient(135deg, #1a2327 0%, #2c3e50 100%);
+            color: #fff;
+            padding: 40px 20px 80px 20px; /* 底部留白给控制栏 */
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.15);
+            display: inline-block;
+            padding: 4px 15px;
+            border-radius: 20px;
+        }
+
+        /* 悬浮控制栏 (搜索+分类) */
+        .control-bar-wrapper {
+            margin-top: -40px;
+            padding: 0 15px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            margin-bottom: 30px;
+        }
+
+        .control-bar {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 搜索框 */
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1.2rem;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cat-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #555;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .cat-btn:hover { background: #f5f5f5; color: #000; }
+        
+        .cat-btn.active {
+            background: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        /* 板块标题 */
+        .section-title {
+            max-width: 1800px;
+            width: 96%;
+            margin: 30px auto 15px auto;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            padding-left: 10px;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .section-count {
+            margin-left: 10px;
+            font-size: 0.9rem;
+            background: #e0e0e0;
+            color: #555;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* 网格容器 */
+        .grid-container {
+            width: 96%;
+            max-width: 1800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: #d0d0d0;
+        }
+
+        /* 卡片头部 */
+        .card-header {
+            background-color: #fdfdfd;
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+
+        .item-badge {
+            font-size: 0.75rem;
+            background: #eee;
+            color: #666;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* 表头行 */
+        .card-subheader {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 70px;
+            padding: 8px 12px;
+            background-color: #fff;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 0.75rem;
+            color: #aaa;
+            text-align: right;
+        }
+        .card-subheader div:first-child { text-align: center; } 
+
+        /* 数据行 */
+        .data-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 70px;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #f9f9f9;
+            font-size: 0.9rem;
+        }
+
+        .data-row:last-child { border-bottom: none; }
+
+        /* 标签列 */
+        .label-col { text-align: center; }
+        
+        .role-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            padding: 2px 0;
+            width: 40px;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .bg-ind { background-color: var(--color-industry); }
+        .bg-zhe { background-color: var(--color-zhejiang); }
+        .bg-for { background-color: var(--color-foreign); }
+        .bg-ret { background-color: var(--color-retail); }
+
+        /* 数值列 */
+        .val-col {
+            text-align: right;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .c-red { color: var(--red-color); }
+        .c-green { color: var(--green-color); }
+        .c-flat { color: #ccc; }
+
+        /* 动向列 */
+        .trend-col { text-align: right; }
+
+        .trend-tag {
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #fff;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .tag-red { background-color: rgba(230, 0, 18, 0.9); }
+        .tag-green { background-color: rgba(0, 153, 68, 0.9); }
+        .tag-gray { background-color: #f0f0f0; color: #ccc; }
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #90a4ae;
+            font-size: 0.85rem;
+            padding: 0 20px;
+        }
+
+        /* 辅助元素 */
+        .no-result {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #999;
+            grid-column: 1 / -1;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 999;
+            font-size: 1.5rem;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (min-width: 768px) {
+            .control-bar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .search-box { width: 300px; }
+            .category-tabs { justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>席位透视镜：期货多空力量全景</h1>
+    <p>1月15日 · 全品种资金博弈雷达</p>
+</header>
+
+<!-- 控制栏 -->
+<div class="control-bar-wrapper">
+    <div class="control-bar">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="搜索品种 (如: 螺纹, 豆粕)...">
+        </div>
+        <div class="category-tabs" id="categoryTabs">
+            <button class="cat-btn active" data-cat="all">全部</button>
+            <button class="cat-btn" data-cat="黑色建材">黑色建材</button>
+            <button class="cat-btn" data-cat="化工能源">化工能源</button>
+            <button class="cat-btn" data-cat="农副产品">农副产品</button>
+            <button class="cat-btn" data-cat="有色贵普">有色贵普</button>
+            <button class="cat-btn" data-cat="金融期货">金融期货</button>
+        </div>
+    </div>
+</div>
+
+<!-- 内容渲染区 -->
+<div id="mainContent">
+    <!-- JS动态生成 -->
+</div>
+
+<footer>
+    <div style="font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 10px;">期货快讯Pro 独家整理</div>
+    <p>数据来源：交易所盘后Top20持仓数据</p>
+    <p>注：计算逻辑为【今日总持仓 - 昨日总持仓】，反映该阵营的净增减动作。</p>
+    <p style="margin-top: 10px;">免责声明：本数据仅供参考，不构成投资建议。</p>
+</footer>
+
+<div class="back-to-top" id="backToTop" title="回到顶部">↑</div>
+
+<script>
+    // ================= 1. 数据源 (保持原始数据) =================
+    // 为了代码整洁，此处折叠数据，实际使用时请包含完整的 industryData, zhejiangData 等数组
+    
+    // 产业机构数据
+    const industryData = [
+        {name: "纯碱", long: -12541, short: 33884, type: "空增多减"},
+        {name: "豆粕", long: 16345, short: 20745, type: "多空双增"},
+        {name: "沪镍", long: 19091, short: 7710, type: "多空双增"},
+        {name: "玉米", long: 16211, short: 9728, type: "多空双增"},
+        {name: "PVC", long: 8592, short: 15460, type: "多空双增"},
+        {name: "玻璃", long: -9029, short: -13024, type: "多空双减"},
+        {name: "甲醇", long: -14391, short: -7052, type: "多空双减"},
+        {name: "中证1000", long: -9164, short: -10033, type: "多空双减"},
+        {name: "沪锌", long: 5577, short: 11578, type: "多空双增"},
+        {name: "沪银", long: 3890, short: 12770, type: "多空双增"},
+        {name: "热卷", long: -8259, short: 7444, type: "空增多减"},
+        {name: "鸡蛋", long: 1662, short: -13896, type: "多增空减"},
+        {name: "螺纹钢", long: -8596, short: 6744, type: "空增多减"},
+        {name: "沪深300", long: -7475, short: -6900, type: "多空双减"},
+        {name: "乙二醇", long: -2705, short: 11455, type: "空增多减"},
+        {name: "PTA", long: -638, short: 13070, type: "空增多减"},
+        {name: "短纤", long: -3640, short: -7333, type: "多空双减"},
+        {name: "焦煤", long: -1663, short: 8942, type: "空增多减"},
+        {name: "纸浆", long: 2336, short: 7889, type: "多空双增"},
+        {name: "菜籽粕", long: -8381, short: 950, type: "空增多减"},
+        {name: "中证500", long: -3654, short: -5353, type: "多空双减"},
+        {name: "氧化铝", long: -4959, short: -3795, type: "多空双减"},
+        {name: "菜籽油", long: 3625, short: 3927, type: "多空双增"},
+        {name: "上证50", long: -4309, short: -3197, type: "多空双减"},
+        {name: "沪铜", long: -4266, short: 3033, type: "空增多减"},
+        {name: "苯乙烯", long: 5717, short: 1441, type: "多空双增"},
+        {name: "对二甲苯", long: -5292, short: -1857, type: "多空双减"},
+        {name: "燃料油", long: -6263, short: 844, type: "空增多减"},
+        {name: "棉花", long: -4802, short: 2281, type: "空增多减"},
+        {name: "棕榈油", long: 1072, short: -5640, type: "多增空减"},
+        {name: "白糖", long: -5879, short: -577, type: "多空双减"},
+        {name: "聚丙烯", long: 4049, short: -2219, type: "多增空减"},
+        {name: "生猪", long: -3538, short: -2035, type: "多空双减"},
+        {name: "硅铁", long: 4055, short: 1514, type: "多空双增"},
+        {name: "苹果", long: -4120, short: -1402, type: "多空双减"},
+        {name: "豆油", long: -1462, short: 3713, type: "空增多减"},
+        {name: "不锈钢", long: 1204, short: 3912, type: "多空双增"},
+        {name: "铁矿石", long: 3338, short: 1561, type: "多空双增"},
+        {name: "锰硅", long: 2898, short: -1976, type: "多增空减"},
+        {name: "红枣", long: -2004, short: 2104, type: "空增多减"},
+        {name: "沪金", long: -3607, short: -319, type: "多空双减"},
+        {name: "沪锡", long: 422, short: 3175, type: "多空双增"},
+        {name: "工业硅", long: -2806, short: 625, type: "空增多减"},
+        {name: "塑料", long: -1433, short: -1918, type: "多空双减"},
+        {name: "20号胶", long: 846, short: -2466, type: "多增空减"},
+        {name: "花生", long: 1365, short: 1854, type: "多空双增"},
+        {name: "三十年债", long: -1503, short: -1627, type: "多空双减"},
+        {name: "沪铅", long: -170, short: -2954, type: "空头减仓"},
+        {name: "LU燃料油", long: -2647, short: 461, type: "空增多减"},
+        {name: "尿素", long: -2379, short: -608, type: "多空双减"},
+        {name: "瓶片", long: -1808, short: -973, type: "多空双减"},
+        {name: "碳酸锂", long: -78, short: -2692, type: "空头减仓"},
+        {name: "液化气", long: -412, short: 2329, type: "空增多减"},
+        {name: "沥青", long: -1290, short: -1062, type: "多空双减"},
+        {name: "淀粉", long: 110, short: -2201, type: "空头减仓"},
+        {name: "五年债", long: 1742, short: 253, type: "多空双增"},
+        {name: "二年债", long: -1689, short: 254, type: "空增多减"},
+        {name: "豆二", long: -1077, short: 800, type: "空增多减"},
+        {name: "橡胶", long: -157, short: -1513, type: "空头减仓"},
+        {name: "烧碱", long: 150, short: 1182, type: "空头增仓"},
+        {name: "BR橡胶", long: -122, short: -860, type: "空头减仓"},
+        {name: "焦炭", long: -363, short: -323, type: "多空双减"},
+        {name: "丙烯", long: 556, short: -104, type: "多头增仓"},
+        {name: "铂", long: -581, short: -67, type: "多头减仓"},
+        {name: "豆一", long: 192, short: 393, type: "空头增仓"},
+        {name: "多晶硅", long: 31, short: -314, type: "空头减仓"},
+        {name: "纯苯", long: -111, short: 167, type: "-"},
+        {name: "十年债", long: 173, short: -103, type: "-"},
+        {name: "集运欧线", long: -266, short: 2, type: "多头减仓"},
+        {name: "铝合金", long: -201, short: -7, type: "-"},
+        {name: "双胶纸", long: 14, short: 22, type: "-"}
+    ];
+    // 浙系资金数据
+    const zhejiangData = [
+        {name: "沪铝", long: -7824, short: -401, type: "多空双减"},
+        {name: "聚丙烯", long: 4332, short: 3788, type: "多空双增"},
+        {name: "沪锌", long: 7359, short: 239, type: "多空双增"},
+        {name: "PTA", long: 4462, short: -3001, type: "多增空减"},
+        {name: "纯碱", long: 3176, short: -3424, type: "多增空减"},
+        {name: "玻璃", long: -546, short: -4370, type: "多空双减"},
+        {name: "甲醇", long: 1425, short: 2846, type: "多空双增"},
+        {name: "玉米", long: 187, short: 3142, type: "空头增仓"},
+        {name: "豆粕", long: 1812, short: 1446, type: "多空双增"},
+        {name: "鸡蛋", long: -2178, short: 1014, type: "空增多减"},
+        {name: "乙二醇", long: 1746, short: -1426, type: "多增空减"},
+        {name: "焦煤", long: -988, short: 1960, type: "空增多减"},
+        {name: "纸浆", long: 1891, short: -1056, type: "多增空减"},
+        {name: "沪银", long: -1838, short: -1032, type: "多空双减"},
+        {name: "沪锡", long: -2444, short: -332, type: "多空双减"},
+        {name: "PVC", long: -2040, short: 692, type: "空增多减"},
+        {name: "LU燃料油", long: 1116, short: 1608, type: "多空双增"},
+        {name: "花生", long: 2361, short: 177, type: "多头增仓"},
+        {name: "沪镍", long: -1209, short: -1120, type: "多空双减"},
+        {name: "豆油", long: 2041, short: -267, type: "多增空减"},
+        {name: "十年债", long: -756, short: 1540, type: "空增多减"},
+        {name: "烧碱", long: 1192, short: 1101, type: "多空双增"},
+        {name: "工业硅", long: 1628, short: -588, type: "多增空减"},
+        {name: "苯乙烯", long: 236, short: -1912, type: "多增空减"},
+        {name: "热卷", long: -178, short: -1915, type: "空头减仓"},
+        {name: "短纤", long: 1370, short: 633, type: "多空双增"},
+        {name: "尿素", long: 1330, short: -673, type: "多增空减"},
+        {name: "锰硅", long: 55, short: 1934, type: "空头增仓"},
+        {name: "螺纹钢", long: -437, short: 1401, type: "空增多减"},
+        {name: "塑料", long: 73, short: 1763, type: "空头增仓"},
+        {name: "沥青", long: 724, short: -1103, type: "多增空减"},
+        {name: "棕榈油", long: -105, short: 1670, type: "空头增仓"},
+        {name: "棉花", long: 1085, short: 470, type: "多空双增"},
+        {name: "燃料油", long: 421, short: 826, type: "多空双增"},
+        {name: "铁矿石", long: -613, short: 597, type: "空增多减"},
+        {name: "菜籽粕", long: 309, short: 764, type: "多空双增"},
+        {name: "沪铅", long: 501, short: 537, type: "多空双增"},
+        {name: "豆二", long: 537, short: 404, type: "多空双增"},
+        {name: "瓶片", long: 788, short: 104, type: "多头增仓"},
+        {name: "中证1000", long: -496, short: -362, type: "多空双减"},
+        {name: "沪铜", long: -830, short: 27, type: "多头减仓"},
+        {name: "氧化铝", long: -315, short: -523, type: "多空双减"},
+        {name: "20号胶", long: 711, short: -95, type: "多头增仓"},
+        {name: "不锈钢", long: 572, short: -210, type: "多增空减"},
+        {name: "五年债", long: 9, short: 722, type: "空头增仓"},
+        {name: "菜籽油", long: 477, short: -249, type: "多增空减"},
+        {name: "红枣", long: 335, short: -283, type: "多增空减"},
+        {name: "白糖", long: -504, short: -96, type: "多头减仓"},
+        {name: "硅铁", long: -130, short: -452, type: "多空双减"},
+        {name: "碳酸锂", long: -313, short: -269, type: "多空双减"},
+        {name: "橡胶", long: 347, short: -218, type: "多增空减"},
+        {name: "豆一", long: -380, short: 168, type: "多头减仓"},
+        {name: "中证500", long: 207, short: -222, type: "多增空减"},
+        {name: "液化气", long: 328, short: -75, type: "多头增仓"},
+        {name: "集运欧线", long: 173, short: -226, type: "空头减仓"},
+        {name: "多晶硅", long: -3, short: -364, type: "空头减仓"},
+        {name: "淀粉", long: -363, short: 0, type: "多头减仓"},
+        {name: "对二甲苯", long: -119, short: 182, type: "-"},
+        {name: "沪金", long: 32, short: 229, type: "-"},
+        {name: "上证50", long: -52, short: -159, type: "-"},
+        {name: "铝合金", long: -117, short: -90, type: "-"},
+        {name: "BR橡胶", long: 48, short: -157, type: "-"},
+        {name: "沪深300", long: -162, short: -39, type: "-"},
+        {name: "纯苯", long: -135, short: -32, type: "-"},
+        {name: "生猪", long: -63, short: -80, type: "-"},
+        {name: "双胶纸", long: 70, short: 68, type: "-"},
+        {name: "苹果", long: 112, short: -7, type: "-"},
+        {name: "二年债", long: -64, short: 41, type: "-"},
+        {name: "丙烯", long: 56, short: 44, type: "-"},
+        {name: "铂", long: -69, short: -15, type: "-"},
+        {name: "三十年债", long: -51, short: -22, type: "-"},
+        {name: "焦炭", long: 4, short: -54, type: "-"}
+    ];
+    // 外资机构数据
+    const foreignData = [
+        {name: "豆粕", long: -10102, short: 8749, type: "空增多减"},
+        {name: "棕榈油", long: -8798, short: 8665, type: "空增多减"},
+        {name: "菜籽粕", long: -7061, short: 7468, type: "空增多减"},
+        {name: "豆二", long: -7945, short: 1616, type: "空增多减"},
+        {name: "热卷", long: 4535, short: -2807, type: "多增空减"},
+        {name: "塑料", long: 3440, short: -3152, type: "多增空减"},
+        {name: "菜籽油", long: -1735, short: 3766, type: "空增多减"},
+        {name: "沪铝", long: 2291, short: -2159, type: "多增空减"},
+        {name: "LU燃料油", long: 1862, short: -2157, type: "多增空减"},
+        {name: "铁矿石", long: 2980, short: 31, type: "多头增仓"},
+        {name: "豆油", long: 1605, short: -1021, type: "多增空减"},
+        {name: "PTA", long: -2466, short: 13, type: "多头减仓"},
+        {name: "沥青", long: 141, short: 1460, type: "空头增仓"},
+        {name: "锰硅", long: -1557, short: 0, type: "多头减仓"},
+        {name: "沪锌", long: 1163, short: 0, type: "多头增仓"},
+        {name: "螺纹钢", long: 72, short: 1089, type: "空头增仓"},
+        {name: "白糖", long: 316, short: -791, type: "多增空减"},
+        {name: "花生", long: 33, short: 884, type: "空头增仓"},
+        {name: "豆一", long: -424, short: -425, type: "多空双减"},
+        {name: "短纤", long: -598, short: -200, type: "多头减仓"},
+        {name: "瓶片", long: -293, short: 381, type: "空增多减"},
+        {name: "20号胶", long: -94, short: 530, type: "空头增仓"},
+        {name: "多晶硅", long: -590, short: 0, type: "多头减仓"},
+        {name: "聚丙烯", long: -574, short: 0, type: "多头减仓"},
+        {name: "不锈钢", long: 24, short: -434, type: "空头减仓"},
+        {name: "中证1000", long: -411, short: 0, type: "多头减仓"},
+        {name: "沪铅", long: 311, short: 0, type: "多头增仓"},
+        {name: "玉米", long: 300, short: 0, type: "多头增仓"},
+        {name: "集运欧线", long: 119, short: 154, type: "-"},
+        {name: "液化气", long: 271, short: 0, type: "多头增仓"},
+        {name: "沪铜", long: 8, short: 176, type: "-"},
+        {name: "沪金", long: -119, short: 0, type: "-"},
+        {name: "中证500", long: 3, short: -58, type: "-"},
+        {name: "沪锡", long: -10, short: 0, type: "-"}
+    ];
+    // 散户阵营数据
+    const retailData = [
+        {name: "纯碱", long: 6609, short: -2, type: "多头增仓"},
+        {name: "鸡蛋", long: -4976, short: -397, type: "多空双减"},
+        {name: "燃料油", long: 659, short: -1745, type: "多增空减"},
+        {name: "甲醇", long: 1073, short: 1272, type: "多空双增"},
+        {name: "烧碱", long: 2083, short: 67, type: "多头增仓"},
+        {name: "热卷", long: 1889, short: 0, type: "多头增仓"},
+        {name: "菜籽粕", long: -1787, short: 15, type: "多头减仓"},
+        {name: "沪银", long: 241, short: -1453, type: "多增空减"},
+        {name: "尿素", long: 1328, short: -284, type: "多增空减"},
+        {name: "苹果", long: 208, short: -1229, type: "多增空减"},
+        {name: "十年债", long: 156, short: -1277, type: "空头减仓"},
+        {name: "聚丙烯", long: 1299, short: 51, type: "多头增仓"},
+        {name: "纸浆", long: 525, short: 799, type: "多空双增"},
+        {name: "豆二", long: 178, short: 975, type: "空头增仓"},
+        {name: "沥青", long: 942, short: 0, type: "多头增仓"},
+        {name: "菜籽油", long: 810, short: 105, type: "多头增仓"},
+        {name: "棉花", long: 888, short: 0, type: "多头增仓"},
+        {name: "花生", long: 887, short: 0, type: "多头增仓"},
+        {name: "LU燃料油", long: -529, short: 317, type: "空增多减"},
+        {name: "不锈钢", long: 566, short: -239, type: "多增空减"},
+        {name: "红枣", long: 767, short: -30, type: "多头增仓"},
+        {name: "豆一", long: 708, short: 0, type: "多头增仓"},
+        {name: "短纤", long: -477, short: 210, type: "空增多减"},
+        {name: "白糖", long: 657, short: 0, type: "多头增仓"},
+        {name: "二年债", long: 550, short: 102, type: "多头增仓"},
+        {name: "三十年债", long: 551, short: 98, type: "多头增仓"},
+        {name: "焦煤", long: 638, short: 0, type: "多头增仓"},
+        {name: "玉米", long: 590, short: -6, type: "多头增仓"},
+        {name: "生猪", long: 493, short: -102, type: "多头增仓"},
+        {name: "沪镍", long: -362, short: -148, type: "多头减仓"},
+        {name: "PVC", long: 471, short: 3, type: "多头增仓"},
+        {name: "沪铜", long: -278, short: -68, type: "多头减仓"},
+        {name: "沪铝", long: 331, short: 0, type: "多头增仓"},
+        {name: "螺纹钢", long: 326, short: -1, type: "多头增仓"},
+        {name: "豆粕", long: -256, short: 53, type: "多头减仓"},
+        {name: "沪铅", long: 241, short: 54, type: "-"},
+        {name: "氧化铝", long: -264, short: -31, type: "多头减仓"},
+        {name: "沪锡", long: -65, short: -194, type: "-"},
+        {name: "PTA", long: 156, short: 99, type: "-"},
+        {name: "乙二醇", long: 233, short: 0, type: "多头增仓"},
+        {name: "沪金", long: -187, short: -37, type: "-"},
+        {name: "五年债", long: 20, short: 202, type: "-"},
+        {name: "苯乙烯", long: 206, short: 0, type: "多头增仓"},
+        {name: "中证1000", long: -13, short: -187, type: "-"},
+        {name: "锰硅", long: 0, short: 197, type: "-"},
+        {name: "集运欧线", long: -118, short: 71, type: "-"},
+        {name: "液化气", long: 185, short: 0, type: "-"},
+        {name: "工业硅", long: 117, short: 0, type: "-"},
+        {name: "20号胶", long: -26, short: 87, type: "-"},
+        {name: "玻璃", long: -90, short: -19, type: "-"},
+        {name: "棕榈油", long: 15, short: 90, type: "-"},
+        {name: "豆油", long: -92, short: 12, type: "-"},
+        {name: "沪深300", long: 57, short: 0, type: "-"},
+        {name: "碳酸锂", long: 0, short: -55, type: "-"},
+        {name: "多晶硅", long: 51, short: 0, type: "-"},
+        {name: "上证50", long: -42, short: -2, type: "-"},
+        {name: "硅铁", long: -39, short: 0, type: "-"},
+        {name: "铂", long: -30, short: 0, type: "-"},
+        {name: "塑料", long: 26, short: 0, type: "-"},
+        {name: "BR橡胶", long: 0, short: -26, type: "-"},
+        {name: "中证500", long: 1, short: -6, type: "-"},
+        {name: "对二甲苯", long: 0, short: -3, type: "-"},
+        {name: "双胶纸", long: 2, short: 0, type: "-"},
+        {name: "瓶片", long: 0, short: 0, type: "-"}
+    ];
+
+    // ================= 2. 数据处理与分类逻辑 =================
+
+    // 定义板块归属字典
+    const SECTOR_MAP = {
+        '螺纹钢': '黑色建材', '热卷': '黑色建材', '铁矿石': '黑色建材', '焦煤': '黑色建材', '焦炭': '黑色建材', '锰硅': '黑色建材', '硅铁': '黑色建材', '不锈钢': '黑色建材', '线材': '黑色建材',
+        '纯碱': '化工能源', '玻璃': '化工能源', '甲醇': '化工能源', '尿素': '化工能源', '纸浆': '化工能源', '烧碱': '化工能源', '瓶片': '化工能源',
+        'PVC': '化工能源', '塑料': '化工能源', '聚丙烯': '化工能源', '苯乙烯': '化工能源', '乙二醇': '化工能源', 'PTA': '化工能源', '短纤': '化工能源', '对二甲苯': '化工能源', '丙烯': '化工能源',
+        '橡胶': '化工能源', '20号胶': '化工能源', 'BR橡胶': '化工能源', '合成橡胶': '化工能源',
+        '原油': '化工能源', '燃料油': '化工能源', 'LU燃料油': '化工能源', '低硫燃料油': '化工能源', '沥青': '化工能源', '液化气': '化工能源', '纯苯': '化工能源',
+        '沪铜': '有色贵普', '沪铝': '有色贵普', '沪锌': '有色贵普', '沪镍': '有色贵普', '沪锡': '有色贵普', '沪铅': '有色贵普', '氧化铝': '有色贵普', '铝合金': '有色贵普',
+        '沪金': '有色贵普', '沪银': '有色贵普', '铂': '有色贵普', '钯': '有色贵普',
+        '碳酸锂': '有色贵普', '工业硅': '有色贵普', '多晶硅': '有色贵普',
+        '豆粕': '农副产品', '菜籽粕': '农副产品', '豆油': '农副产品', '棕榈油': '农副产品', '菜籽油': '农副产品', '豆一': '农副产品', '豆二': '农副产品',
+        '玉米': '农副产品', '淀粉': '农副产品', '棉花': '农副产品', '白糖': '农副产品', '花生': '农副产品',
+        '鸡蛋': '农副产品', '生猪': '农副产品', '苹果': '农副产品', '红枣': '农副产品',
+        '沪深300': '金融期货', '中证500': '金融期货', '中证1000': '金融期货', '上证50': '金融期货',
+        '二年债': '金融期货', '五年债': '金融期货', '十年债': '金融期货', '三十年债': '金融期货',
+        '集运欧线': '其他', '双胶纸': '其他'
+    };
+
+    // 默认归类
+    function getSector(name) {
+        return SECTOR_MAP[name] || '其他';
+    }
+
+    // 整合数据
+    const mapIndustry = {}; industryData.forEach(d => mapIndustry[d.name] = d);
+    const mapZhejiang = {}; zhejiangData.forEach(d => mapZhejiang[d.name] = d);
+    const mapForeign = {}; foreignData.forEach(d => mapForeign[d.name] = d);
+    const mapRetail = {}; retailData.forEach(d => mapRetail[d.name] = d);
+
+    const allNames = new Set([
+        ...industryData.map(d => d.name),
+        ...zhejiangData.map(d => d.name),
+        ...foreignData.map(d => d.name),
+        ...retailData.map(d => d.name)
+    ]);
+
+    const mergedList = Array.from(allNames).map(name => {
+        const ind = mapIndustry[name];
+        const zhe = mapZhejiang[name];
+        const fore = mapForeign[name];
+        const ret = mapRetail[name];
+
+        let weight = 0;
+        if (ind) weight += Math.abs(ind.long) + Math.abs(ind.short);
+        else if (zhe) weight += (Math.abs(zhe.long) + Math.abs(zhe.short)) * 0.5;
+
+        return {
+            name: name,
+            sector: getSector(name),
+            weight: weight,
+            roles: [
+                { id: 'ind', label: '产业', class: 'bg-ind', data: ind },
+                { id: 'zhe', label: '浙系', class: 'bg-zhe', data: zhe },
+                { id: 'for', label: '外资', class: 'bg-for', data: fore },
+                { id: 'ret', label: '散户', class: 'bg-ret', data: ret }
+            ]
+        };
+    });
+
+    // 排序：默认按权重降序
+    mergedList.sort((a, b) => b.weight - a.weight);
+
+    // ================= 3. 渲染逻辑 =================
+
+    const mainContent = document.getElementById('mainContent');
+    const searchInput = document.getElementById('searchInput');
+    const categoryTabs = document.getElementById('categoryTabs');
+    const backToTopBtn = document.getElementById('backToTop');
+
+    // 辅助：HTML生成器
+    function generateCard(item) {
+        let rows = '';
+        item.roles.forEach(role => {
+            const d = role.data;
+            if (d) {
+                // 格式化动向标签
+                let tagClass = 'tag-gray';
+                if(d.type.includes('多增') || d.type.includes('空头减仓') || d.type.includes('多头增仓')) tagClass = 'tag-red';
+                else if(d.type.includes('空增') || d.type.includes('空头增仓') || d.type.includes('多头减仓')) tagClass = 'tag-green';
+                
+                rows += `
+                    <div class="data-row">
+                        <div class="label-col"><span class="role-badge ${role.class}">${role.label}</span></div>
+                        <div class="val-col ${d.long > 0 ? 'c-red' : (d.long < 0 ? 'c-green' : 'c-flat')}">${d.long > 0 ? '+'+d.long : d.long}</div>
+                        <div class="val-col ${d.short > 0 ? 'c-red' : (d.short < 0 ? 'c-green' : 'c-flat')}">${d.short > 0 ? '+'+d.short : d.short}</div>
+                        <div class="trend-col"><span class="trend-tag ${tagClass}">${d.type === '-' ? '-' : d.type}</span></div>
+                    </div>
+                `;
+            } else {
+                rows += `
+                    <div class="data-row">
+                        <div class="label-col"><span class="role-badge ${role.class}" style="opacity:0.3">${role.label}</span></div>
+                        <div class="val-col c-flat" style="opacity:0.5">-</div>
+                        <div class="val-col c-flat" style="opacity:0.5">-</div>
+                        <div class="trend-col"><span class="trend-tag tag-gray" style="opacity:0.5">-</span></div>
+                    </div>
+                `;
+            }
+        });
+
+        return `
+            <div class="card">
+                <div class="card-header">
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-badge">${item.sector}</span>
+                </div>
+                <div class="card-subheader">
+                    <div>阵营</div>
+                    <div>买单变化</div>
+                    <div>卖单变化</div>
+                    <div>动向</div>
+                </div>
+                ${rows}
+            </div>
+        `;
+    }
+
+    // 核心渲染函数
+    function render(filterType = 'all', searchQuery = '') {
+        mainContent.innerHTML = '';
+        let resultList = mergedList;
+
+        // 1. 搜索过滤优先
+        if (searchQuery.trim() !== '') {
+            const q = searchQuery.toLowerCase().trim();
+            resultList = mergedList.filter(item => item.name.toLowerCase().includes(q));
+            
+            if (resultList.length === 0) {
+                mainContent.innerHTML = '<div class="no-result">未找到匹配品种</div>';
+                return;
+            }
+
+            // 搜索模式下，不显示板块标题，直接平铺
+            let gridHtml = '<div class="grid-container">';
+            resultList.forEach(item => { gridHtml += generateCard(item); });
+            gridHtml += '</div>';
+            mainContent.innerHTML = gridHtml;
+            return;
+        }
+
+        // 2. 板块过滤
+        // 定义要显示的顺序
+        const order = ['黑色建材', '化工能源', '农副产品', '有色贵普', '金融期货', '其他'];
+        
+        order.forEach(sectorName => {
+            // 如果选了特定分类，且当前循环不是该分类，跳过
+            if (filterType !== 'all' && filterType !== sectorName) return;
+
+            // 筛选属于该板块的数据
+            const sectorItems = resultList.filter(item => item.sector === sectorName);
+            if (sectorItems.length === 0) return;
+
+            // 生成标题
+            const sectionHtml = `
+                <div class="section-title">
+                    ${sectorName} <span class="section-count">${sectorItems.length}</span>
+                </div>
+                <div class="grid-container">
+                    ${sectorItems.map(item => generateCard(item)).join('')}
+                </div>
+            `;
+            mainContent.innerHTML += sectionHtml;
+        });
+        
+        if (mainContent.innerHTML === '') {
+             mainContent.innerHTML = '<div class="no-result">该分类下暂无数据</div>';
+        }
+    }
+
+    // ================= 4. 事件监听 =================
+
+    // 搜索事件
+    searchInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        // 重置分类按钮状态（搜索时分类高亮显得奇怪，或者保持all）
+        // 这里选择不做强制重置，但在逻辑上搜索优先
+        const activeCat = document.querySelector('.cat-btn.active').dataset.cat;
+        render(activeCat, val);
+    });
+
+    // 分类点击事件
+    categoryTabs.addEventListener('click', (e) => {
+        if (e.target.classList.contains('cat-btn')) {
+            // 切换激活样式
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+
+            // 清空搜索框（提升体验，点击分类通常意味着想看列表）
+            searchInput.value = '';
+
+            const cat = e.target.dataset.cat;
+            render(cat, '');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    // 回到顶部显隐
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.add('visible');
+        } else {
+            backToTopBtn.classList.remove('visible');
+        }
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // 初始化
+    render('all', '');
+
+</script>
+
+</body>
+</html>
