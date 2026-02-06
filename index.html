@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026年2月USDA月报核心专题</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc; /* Slate-50 */
+            -webkit-font-smoothing: antialiased;
+            color: #1e293b; /* Slate-800 */
+        }
+        
+        /* Custom Utilities */
+        .text-gold { color: #C59955; }
+        .bg-gold { background-color: #C59955; }
+        .border-gold { border-color: #C59955; }
+        .bg-gold-light { background-color: #fcf6e8; }
+        
+        /* Animations */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-card { animation: fade-in-up 0.6s ease-out forwards; opacity: 0; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        @keyframes grow-width { from { width: 0; } }
+        .animate-bar { animation: grow-width 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+        /* Mobile Optimization */
+        .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 80px); }
+    </style>
+</head>
+<body class="pb-safe">
+
+    <!-- 1. Header Area -->
+    <header class="bg-slate-900 text-white pt-10 pb-20 px-5 relative overflow-hidden">
+        <!-- Background Accents -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[#C59955]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
+
+        <div class="max-w-3xl mx-auto relative z-10">
+            <div class="flex items-center gap-2 mb-4 opacity-90">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#C59955] text-slate-900">重磅前瞻</span>
+                <span class="text-xs text-slate-300 tracking-wide">发布时间：2026年2月11日 凌晨1:00</span>
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl font-black leading-tight mb-4">
+                2026年2月USDA月报<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#C59955] to-[#f3e5ab]">农产品投资核心专题</span>
+            </h1>
+
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 border-l-2 border-[#C59955] pl-4">
+                核心博弈：南美天气的“审判”与美豆出口的“筑底”。<br>
+                当巴西产量面临干旱修正，美豆能否守住价格底线？
+            </p>
+
+            <!-- Countdown -->
+            <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg px-4 py-2.5">
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 uppercase tracking-wider">距离报告发布</span>
+                    <span id="countdown" class="font-mono text-lg font-bold text-[#f3e5ab]">--:--:--:--</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 -mt-10 relative z-10 space-y-6">
+
+        <!-- 2. Intro Card (Context) -->
+        <div class="bg-white rounded-xl shadow-lg border-t-4 border-[#C59955] p-5 animate-card">
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-3">
+                <svg class="w-5 h-5 text-[#C59955]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                核心看点：供给 vs 需求
+            </h2>
+            <p class="text-sm text-slate-600 leading-relaxed text-justify">
+                相比于1月报告，2月市场的焦点已转向<strong>南美大豆产量修正</strong>（干旱风险）及<strong>出口需求调整</strong>。这是“天气审判”的关键时刻。由于1月美豆结转库存高于预期，出口节奏的微调将直接决定价格的中期底部。
+            </p>
+        </div>
+
+        <!-- 3. Soybean Section -->
+        <section class="animate-card delay-100">
+            <div class="flex items-end justify-between mb-3 px-1">
+                <h2 class="text-xl font-bold text-slate-900">美豆：库存与出口博弈</h2>
+                <span class="text-xs text-slate-500 font-mono">SOYBEAN OUTLOOK</span>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <!-- Data Preview Chart -->
+                <div class="p-5 border-b border-slate-50">
+                    <h3 class="font-bold text-slate-800 mb-4 text-sm">美豆期末库存预期 (亿蒲式耳)</h3>
+                    <div class="relative h-48 flex items-end justify-around pb-6">
+                        <!-- Grid Lines -->
+                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
+                            <div class="w-full border-t border-dashed border-slate-100 h-0"></div>
+                            <div class="w-full border-t border-dashed border-slate-100 h-0"></div>
+                            <div class="w-full border-t border-dashed border-slate-100 h-0"></div>
+                            <div class="w-full border-t border-slate-200 h-0"></div>
+                        </div>
+                        
+                        <!-- Reference Line (Jan Report) -->
+                        <div class="absolute top-[20%] w-full border-t border-red-400 z-0">
+                            <span class="absolute right-0 -top-4 text-[10px] text-red-500 bg-white px-1 font-bold">1月前值: 3.50</span>
+                        </div>
+
+                        <!-- Bars -->
+                        <div class="relative z-10 w-12 flex flex-col items-center group">
+                            <span class="text-xs font-bold text-slate-400 mb-1">2.45</span>
+                            <div class="w-full bg-slate-300 rounded-t-sm h-[120px] group-hover:bg-slate-400 transition-colors"></div>
+                            <span class="absolute -bottom-6 text-[10px] text-slate-500">最低</span>
+                        </div>
+                        <div class="relative z-10 w-12 flex flex-col items-center group">
+                            <span class="text-xs font-bold text-[#C59955] mb-1">3.24</span>
+                            <div class="w-full bg-[#C59955] rounded-t-sm h-[160px] shadow-[0_4px_10px_rgba(197,153,85,0.3)]"></div>
+                            <span class="absolute -bottom-6 text-[10px] text-slate-800 font-bold">预期均值</span>
+                        </div>
+                        <div class="relative z-10 w-12 flex flex-col items-center group">
+                            <span class="text-xs font-bold text-slate-400 mb-1">3.75</span>
+                            <div class="w-full bg-slate-300 rounded-t-sm h-[185px] group-hover:bg-slate-400 transition-colors"></div>
+                            <span class="absolute -bottom-6 text-[10px] text-slate-500">最高</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Three Drivers -->
+                <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            <h4 class="font-bold text-sm text-slate-800">出口 (Exports)</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            近期传闻中国或增购 <span class="text-red-600 font-bold">2500万吨</span>。若报告反映此“预售”，将强力支撑价格。
+                        </p>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                            <h4 class="font-bold text-sm text-slate-800">压榨 (Crushing)</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            生物柴油需求稳健，压榨量预估大概率维持在 <span class="font-bold">25.7亿</span> 蒲式耳历史高位。
+                        </p>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            <h4 class="font-bold text-sm text-slate-800">生物燃料风险</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            若豆油需求持续疲软（参考1月下调7亿磅），可能反向推升库存。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quote -->
+                <div class="bg-slate-50 p-4 border-t border-slate-100">
+                    <div class="flex gap-3">
+                        <span class="text-3xl text-[#C59955] leading-none font-serif">“</span>
+                        <div>
+                            <p class="text-sm text-slate-700 italic leading-relaxed">
+                                真正的黑天鹅是库存保持在 3.5 亿以上，这意味着 USDA 认为近期的采购协议只是短期‘烟雾弹’。
+                            </p>
+                            <div class="mt-2 text-xs text-slate-400 font-bold text-right">— Ag Market View</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. South America Weather Section -->
+        <section class="animate-card delay-200">
+            <div class="flex items-end justify-between mb-3 px-1">
+                <h2 class="text-xl font-bold text-slate-900">南美：“天文数字”的修正</h2>
+                <span class="text-xs text-slate-500 font-mono">BRAZIL & ARGENTINA</span>
+            </div>
+
+            <!-- Brazil Card -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 mb-4">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <img src="https://flagcdn.com/w20/br.png" class="w-5 rounded-sm shadow-sm" alt="Brazil">
+                    巴西产量预估分歧 (亿吨)
+                </h3>
+                
+                <div class="space-y-5">
+                    <!-- CONAB -->
+                    <div class="relative">
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="font-bold text-slate-600">CONAB (巴西官方)</span>
+                            <span class="font-bold text-[#C59955]">1.76</span>
+                        </div>
+                        <div class="h-4 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#C59955] rounded-full animate-bar" style="width: 40%;"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">下调原因：南部降雨不均</p>
+                    </div>
+
+                    <!-- USDA -->
+                    <div class="relative">
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="font-bold text-slate-800">USDA (1月基准)</span>
+                            <span class="font-bold text-slate-800">1.78</span>
+                        </div>
+                        <div class="h-4 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-slate-600 rounded-full animate-bar" style="width: 53%;"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">极大值预估：单产 3.63 吨/公顷</p>
+                    </div>
+
+                    <!-- StoneX -->
+                    <div class="relative">
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="font-bold text-slate-500">StoneX (私营机构)</span>
+                            <span class="font-bold text-slate-400">1.81</span>
+                        </div>
+                        <div class="h-4 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-slate-300 rounded-full animate-bar" style="width: 73%;"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">乐观派：中西部单产超预期</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Argentina Card -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
+                        <img src="https://flagcdn.com/w20/ar.png" class="w-5 rounded-sm shadow-sm" alt="Argentina">
+                        阿根廷：与时间的赛跑
+                    </h3>
+                    <div class="bg-white/80 px-2 py-1 rounded text-[10px] font-bold text-blue-600 shadow-sm">
+                        关键期：2月上旬
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 items-center mb-4">
+                    <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
+                        <div class="text-[10px] text-slate-500 mb-1">USDA 1月预估</div>
+                        <div class="text-lg font-bold text-slate-800">4850 <span class="text-xs font-normal">万吨</span></div>
+                    </div>
+                    <div class="text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </div>
+                    <div class="flex-1 bg-white p-3 rounded-lg shadow-sm border border-red-100">
+                        <div class="text-[10px] text-red-500 mb-1">BAGE 交易所</div>
+                        <div class="text-lg font-bold text-red-600">4800 <span class="text-xs font-normal">万吨</span></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 text-xs text-blue-800/80 bg-blue-100/50 p-3 rounded-lg">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18v3m0 0l-3-3m3 3l3-3"></path></svg>
+                    <span><strong>气象监测：</strong>2月6-11日新一轮冷锋将带来降雨（覆盖率70%），这是决定后期大豆生死的关键。</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CORN Section (NEW) -->
+        <section class="animate-card delay-300">
+            <div class="flex items-end justify-between mb-3 px-1">
+                <h2 class="text-xl font-bold text-slate-900">玉米：出口韧性与乙醇博弈</h2>
+                <span class="text-xs text-slate-500 font-mono">CORN OUTLOOK</span>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-yellow-200/60 overflow-hidden">
+                <div class="bg-yellow-50/50 p-4 border-b border-yellow-100">
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        美玉米正处于<strong>“创纪录产量(170亿蒲)”</strong>与<strong>“强劲需求”</strong>的拉锯战中心。2月报告看点：出口增速与乙醇景气度能否消化庞大供应？
+                    </p>
+                </div>
+
+                <!-- Data Grid for Corn -->
+                <div class="grid grid-cols-2 divide-x divide-y divide-slate-100 border-b border-slate-100">
+                    <div class="p-4">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">美玉米期末库存</div>
+                        <div class="text-xl font-bold text-slate-800">22.27<span class="text-xs text-slate-500 font-normal ml-1">亿蒲</span></div>
+                        <div class="mt-1 flex items-center gap-1">
+                            <span class="text-[10px] px-1.5 py-0.5 bg-green-100 text-green-700 rounded font-medium">市场预期下调</span>
+                            <span class="text-[10px] text-slate-400">至 21.85亿</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">阿根廷玉米产量</div>
+                        <div class="text-xl font-bold text-slate-800">5300<span class="text-xs text-slate-500 font-normal ml-1">万吨</span></div>
+                        <div class="mt-1 text-[10px] text-slate-500 leading-tight">
+                            早期播种受旱，单产面临<span class="text-red-500 font-bold">15%</span>缩水风险
+                        </div>
+                    </div>
+                    <div class="p-4 col-span-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">乙醇用粮 (Ethanol)</div>
+                            <div class="text-xs font-bold text-yellow-600">目标: 56亿蒲</div>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 mb-2">
+                            <div class="bg-yellow-400 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-500">日均产量刷新纪录(119.6万桶)，E15政策预期支撑强劲需求。</p>
+                    </div>
+                </div>
+
+                <!-- Trader Note Box -->
+                <div class="p-4 bg-slate-50">
+                    <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5 mb-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-800"></span>
+                        交易员笔记：底部抬升
+                    </h4>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        目前玉米进入“底部抬升”模式。出口强势证明美玉米在 <span class="font-mono font-bold">$4.2</span> 附近的性价比。接下来重点关注巴西二茬玉米（Safrinha）的播种进度。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. 2026 Outlook (Timeline) -->
+        <section class="animate-card delay-300">
+            <div class="flex items-end justify-between mb-3 px-1">
+                <h2 class="text-xl font-bold text-slate-900">2026年展望：种植意向拔河</h2>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
+                <div class="relative pl-4 space-y-6">
+                    <!-- Vertical Line -->
+                    <div class="absolute top-2 left-[21px] w-0.5 h-[85%] bg-slate-200"></div>
+
+                    <!-- Event 1 -->
+                    <div class="relative flex gap-4">
+                        <div class="z-10 w-3 h-3 rounded-full bg-[#C59955] ring-4 ring-white shrink-0 mt-1.5"></div>
+                        <div>
+                            <div class="inline-block px-2 py-0.5 bg-gold-light text-yellow-800 text-[10px] font-bold rounded mb-1 border border-yellow-200">2月19-20日</div>
+                            <h4 class="font-bold text-sm text-slate-800">Ag Outlook Forum</h4>
+                            <p class="text-xs text-slate-500 mt-1">发布2026/27年度首个初步面积预估，3月报告前的官方风向标。</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 2 -->
+                    <div class="relative flex gap-4">
+                        <div class="z-10 w-3 h-3 rounded-full bg-slate-400 ring-4 ring-white shrink-0 mt-1.5"></div>
+                        <div>
+                            <div class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded mb-1">3月31日</div>
+                            <h4 class="font-bold text-sm text-slate-800">Prospective Plantings</h4>
+                            <p class="text-xs text-slate-500 mt-1">基于实地调研的意向报告，全年波动最大的节点。</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 3 -->
+                    <div class="relative flex gap-4">
+                        <div class="z-10 w-3 h-3 rounded-full bg-slate-400 ring-4 ring-white shrink-0 mt-1.5"></div>
+                        <div>
+                            <div class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded mb-1">6月30日</div>
+                            <h4 class="font-bold text-sm text-slate-800">Acreage Report</h4>
+                            <p class="text-xs text-slate-500 mt-1">最终播种面积修正。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy Box -->
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                    <div class="text-xs text-slate-600 bg-slate-50 p-3 rounded border border-slate-200">
+                        <strong class="text-slate-800">对冲策略：</strong>
+                        关注 <strong>大豆/玉米价格比 (2.4)</strong>。若南美减产推升比值至2.5以上，将引导3月大豆种植意愿增强。密切关注 11月大豆/12月玉米 合约套利。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Investment Tips (Dark Card) -->
+        <section class="animate-card delay-300">
+            <div class="bg-slate-900 rounded-xl p-5 shadow-xl text-white">
+                <div class="flex items-center gap-2 mb-4 text-[#C59955]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h3 class="font-bold text-lg">投资者关键提示</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex gap-3 items-start">
+                        <div class="mt-1 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_red]"></div>
+                        <div>
+                            <h4 class="font-bold text-sm mb-1">全球库存警戒线</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                关注全球大豆库存是否突破 <span class="font-mono text-white">1.244亿吨</span>。若数据继续增加，将确立本年度<strong>供应过剩 (Oversupply)</strong> 基调。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 items-start">
+                        <div class="mt-1 w-1.5 h-1.5 rounded-full bg-[#C59955] shadow-[0_0_8px_#C59955]"></div>
+                        <div>
+                            <h4 class="font-bold text-sm mb-1">基差 (Basis) 异动</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                若期货走低但<strong>现货基差走强</strong>，可能是诱导农户卖粮信号，往往暗示现货见底。由于美农面临债务压力，这一信号尤为关键。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 px-4 text-slate-400">
+        <p class="text-[10px] mb-1">金十期货APP独家整理 | 数据来源：USDA, Reuters, Bloomberg</p>
+        <p class="text-[10px] opacity-60">免责声明：以上内容仅供参考，不构成投资建议。</p>
+    </footer>
+
+    <!-- Bottom Action Bar -->
+    <div class="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur border-t border-slate-200 pb-safe-bottom">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex gap-3">
+            <button onclick="handleShare()" class="flex-1 h-10 rounded-lg border border-slate-200 bg-white text-slate-700 font-medium text-sm hover:bg-slate-50 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                分享专题
+            </button>
+            <a href="https://qihuo.jin10.com/app" target="_blank" class="flex-[2] h-10 rounded-lg bg-gradient-to-r from-[#C59955] to-[#D4AF37] text-white font-bold text-sm shadow-md shadow-orange-100 hover:shadow-lg active:scale-95 transition-all flex items-center justify-center">
+                下载金十期货APP
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 1. Countdown Logic
+        function initCountdown() {
+            const targetDate = new Date('2026-02-11T01:00:00+08:00'); // Beijing Time
+            const el = document.getElementById('countdown');
+            
+            function update() {
+                const now = new Date();
+                const diff = targetDate - now;
+                
+                if (diff <= 0) {
+                    el.innerText = "报告已发布";
+                    return;
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                el.innerText = `${days}天 ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+            }
+            
+            setInterval(update, 1000);
+            update();
+        }
+
+        // 2. Share Logic (Mock Bridge)
+        function handleShare() {
+            if (window.Jin10JSBridge) {
+                // In-App
+                try {
+                    window.Jin10JSBridge.dispatch('appShare', { url: window.location.href });
+                } catch(e) { console.log('Share Error', e); }
+            } else {
+                // Browser
+                if (navigator.share) {
+                    navigator.share({
+                        title: '2026年2月USDA月报核心专题',
+                        text: '核心博弈：南美天气的“审判”与美豆出口的“筑底”',
+                        url: window.location.href
+                    });
+                } else {
+                    alert('请复制链接分享');
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initCountdown);
+    </script>
+</body>
+</html>
