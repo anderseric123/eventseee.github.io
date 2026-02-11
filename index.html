@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>金十期货 - 非农前瞻 & 模拟器</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      /* --- 通用字体设置 --- */
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+      
+      body {
+        font-family: 'Source Han Sans', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
+        background-color: #f5f7fa; /* 默认背景色 */
+        -webkit-font-smoothing: antialiased;
+        padding-top: 60px; /* 为顶部导航栏留出空间 */
+      }
+
+      /* --- 模块 1：非农看板 样式 --- */
+      .tofu-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+      }
+      .trend-up { color: #e11d48; } 
+      .trend-down { color: #10b981; } 
+      .bg-trend-up { background-color: #fff1f2; color: #e11d48; }
+      .bg-trend-down { background-color: #ecfdf5; color: #059669; }
+
+      /* --- 模块 2：模拟器 样式 --- */
+      .gauge-bar {
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .hidden-view {
+        display: none;
+      }
+
+      /* --- 通用工具 --- */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      /* --- 顶部 Tab 切换栏样式 --- */
+      .main-nav-btn {
+        position: relative;
+        color: #64748b;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+      .main-nav-btn.active {
+        color: #2563eb;
+      }
+      .main-nav-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -18px; /* 根据导航栏高度调整 */
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: #2563eb;
+        border-radius: 3px 3px 0 0;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-800">
+
+    <!-- ========================================== -->
+    <!-- GLOBAL NAVIGATION (APP SWITCHER)           -->
+    <!-- ========================================== -->
+    <nav class="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md shadow-sm z-[100] h-[60px] flex items-center justify-center border-b border-slate-200">
+        <div class="flex space-x-12">
+            <button onclick="switchModule('nfp')" id="btn-tab-nfp" class="main-nav-btn active flex items-center gap-2 px-2 py-4">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span>非农看板</span>
+            </button>
+            <button onclick="switchModule('game')" id="btn-tab-game" class="main-nav-btn flex items-center gap-2 px-2 py-4">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+                <span>主席模拟</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- MODULE 1: NFP DASHBOARD (非农前瞻)         -->
+    <!-- ========================================== -->
+    <div id="module-nfp" class="animate-fade-in pb-10">
+        <!-- Hero Section -->
+        <header class="bg-slate-900 text-white relative overflow-hidden flex flex-col justify-center items-center text-center px-4" style="height: 300px;">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <div class="absolute right-0 top-0 w-64 h-64 bg-blue-500 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute left-0 bottom-0 w-48 h-48 bg-red-500 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="z-10 w-full max-w-lg space-y-4">
+            <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-600/30 text-blue-200 text-xs font-bold border border-blue-500/30 backdrop-blur-sm">
+            <span class="w-2 h-2 rounded-full bg-red-500 mr-2 animate-pulse"></span>
+            即将发布
+            </div>
+            
+            <h1 class="text-3xl font-black tracking-tight leading-tight">
+            美国 1 月非农就业报告
+            </h1>
+            
+            <!-- 倒计时 -->
+            <div class="mt-4 inline-block">
+            <div id="countdown-timer" class="text-3xl font-mono font-bold text-yellow-400 tracking-wider">--:--:--</div>
+            <p class="text-xs text-slate-400 mt-1">受政府短暂停摆影响，原定日程推迟至今晚21:30发布。</p>
+            </div>
+        </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-md mx-auto sm:max-w-2xl md:max-w-4xl lg:max-w-6xl px-3 py-6 space-y-8">
+        
+        <!-- Section 1: 市场预期 -->
+        <section>
+            <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-bold text-slate-900 border-l-4 border-red-600 pl-3">市场一致预期</h2>
+            <span class="text-xs text-slate-500 bg-slate-200 px-2 py-1 rounded">来源: 路透/BLS</span>
+            </div>
+            
+            <div class="tofu-grid">
+            <!-- Card 1 -->
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex flex-col justify-between h-28">
+                <div class="text-xs text-slate-500 font-bold truncate">新增就业 (NFP)</div>
+                <div class="mt-1">
+                <span class="text-2xl font-bold trend-up">+70k</span>
+                </div>
+                <div class="text-xs text-slate-400 flex justify-between items-end">
+                <span>前值（12月）:+50k</span>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex flex-col justify-between h-28">
+                <div class="text-xs text-slate-500 font-bold truncate">失业率 (U3)</div>
+                <div class="mt-1">
+                <span class="text-2xl font-bold text-slate-800">4.4%</span>
+                </div>
+                <div class="text-xs text-slate-400">
+                <span>预期持平</span>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex flex-col justify-between h-28">
+                <div class="text-xs text-slate-500 font-bold truncate">时薪环比 (AHE)</div>
+                <div class="mt-1">
+                <span class="text-2xl font-bold trend-up">+0.3%</span>
+                </div>
+                <div class="text-xs text-slate-400">
+                <span>通胀关键</span>
+                </div>
+            </div>
+            
+            <!-- Card 4 -->
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex flex-col justify-between h-24 col-span-3 flex-row items-center px-4">
+                <div>
+                <div class="text-xs text-slate-500 font-bold">劳动参与率</div>
+                <span class="text-xl font-bold text-slate-800">62.4%</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded">供给侧关键指标</span>
+                    <p class="text-xs text-slate-400 mt-1">前值(12月官方)</p>
+                </div>
+            </div>
+            </div>
+            
+            <div class="mt-3 bg-yellow-50 border border-yellow-100 p-3 rounded-lg text-sm text-yellow-800 flex items-start gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+            <p class="leading-tight text-xs"><strong>MNI提示：</strong>投行预测分歧巨大 (0k 至 +135k)，数据可能大幅波动。</p>
+            </div>
+        </section>
+
+        <!-- Section 2: 上月复盘 -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h2 class="text-xl font-bold text-slate-900 border-l-4 border-blue-600 pl-3 mb-4">12月官方报告复盘</h2>
+            
+            <div class="bg-slate-50 p-3 rounded-lg mb-4">
+            <p class="text-base text-slate-700 font-medium leading-relaxed">
+                <span class="text-blue-600 font-bold">核心特征：</span>在过去数月，就业增长呈现“不强但也不崩”的特征：新增就业读数偏低 (+50k)，但失业率 (4.4%) 仍处于相对稳定区间。市场因此更关注工资与参与率变化，来判断需求与供给究竟谁在主导。
+            </p>
+            </div>
+
+            <h3 class="text-sm font-bold text-slate-500 mb-2 mt-4">行业冷暖分布</h3>
+            <div class="tofu-grid">
+            <div class="bg-trend-up rounded p-2 text-center border border-red-100">
+                <div class="text-xs opacity-70 mb-1">强势</div>
+                <div class="font-bold text-sm">餐饮服务</div>
+                <i data-lucide="trending-up" class="w-4 h-4 mx-auto mt-1 opacity-50"></i>
+            </div>
+            <div class="bg-slate-100 rounded p-2 text-center border border-slate-200">
+                <div class="text-xs opacity-70 mb-1">稳健</div>
+                <div class="font-bold text-sm">医疗救助</div>
+                <i data-lucide="minus" class="w-4 h-4 mx-auto mt-1 opacity-50"></i>
+            </div>
+            <div class="bg-trend-down rounded p-2 text-center border border-green-100">
+                <div class="text-xs opacity-70 mb-1">弱势</div>
+                <div class="font-bold text-sm">零售业</div>
+                <i data-lucide="trending-down" class="w-4 h-4 mx-auto mt-1 opacity-50"></i>
+            </div>
+            </div>
+        </section>
+
+        <!-- Section 3: 核心关注点 -->
+        <section>
+            <h2 class="text-xl font-bold text-slate-900 mb-4 px-1">本次数据四大看点</h2>
+            <div class="grid grid-cols-1 gap-3">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex gap-3">
+                <div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold">1</div>
+                <div>
+                <h3 class="font-bold text-lg text-slate-900">新增就业：真弱还是“统计噪音”？</h3>
+                <p class="text-slate-600 text-sm mt-1 leading-snug">受短暂停摆影响，MNI提示本次预测分歧显著（0k-135k），意味着市场对“底层就业动能”把握不一致。</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex gap-3">
+                <div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold">2</div>
+                <div>
+                <h3 class="font-bold text-lg text-slate-900">失业率：警惕“取整效应”</h3>
+                <p class="text-slate-600 text-sm mt-1 leading-snug">基线预期 4.4%。若出现 4.3%（取整导致的表观变化），易被误读为“偏紧”，需结合参与率一并观察。</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex gap-3">
+                <div class="bg-red-50 text-red-600 w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold">3</div>
+                <div>
+                <h3 class="font-bold text-lg text-slate-900">工资增速：通胀粘性线索</h3>
+                <p class="text-slate-600 text-sm mt-1 leading-snug">平均时薪是非农里最像通胀的变量。市场预期环比 +0.3%。若超预期，通胀担忧可能重燃。</p>
+                </div>
+            </div>  
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex gap-3">
+                <div class="bg-red-50 text-red-600 w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold">4</div>
+                <div>
+                <h3 class="font-bold text-lg text-slate-900">供给侧：需求弱还是供给缩？</h3>
+                <p class="text-slate-600 text-sm mt-1 leading-snug">美联储难题：就业走弱到底来自需求走弱，还是供给收缩？两者政策含义完全不同。</p>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 情景推演 -->
+        <section>
+            <div class="flex flex-col mb-4">
+                <h2 class="text-xl font-bold text-slate-900">情景推演与市场影响</h2>
+                <p class="text-xs text-slate-500 mt-1">注意：本周五还有CPI数据，市场可能保留部分波动。</p>
+            </div>
+
+            <div class="space-y-4">
+            <!-- Scenario A: Strong -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <div class="bg-red-500 text-white px-4 py-2 flex justify-between items-center">
+                <span class="font-bold">情景 A：数据偏强 (鹰派)</span>
+                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                </div>
+                <div class="p-4 bg-red-50/30">
+                <div class="flex justify-between text-sm mb-2 border-b border-red-100 pb-2">
+                    <span class="text-slate-500">触发条件</span>
+                    <span class="font-bold text-red-700">新增 > 100k & 工资≥0.3%</span>
+                </div>
+                <p class="text-sm text-slate-800 leading-relaxed">
+                    <strong>市场叙事：</strong>劳动力需求仍具韧性。若同时工资偏强，市场更容易讨论“通胀粘性”，对降息预期更为谨慎。
+                </p>
+                <div class="mt-2 text-xs font-bold text-red-600 bg-red-100 inline-block px-2 py-1 rounded">
+                    利空美债 / 利多美元
+                </div>
+                </div>
+            </div>
+
+            <!-- Scenario B: Neutral -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <div class="bg-slate-500 text-white px-4 py-2 flex justify-between items-center">
+                <span class="font-bold">情景 B：符合预期 (基准)</span>
+                <i data-lucide="minus" class="w-5 h-5"></i>
+                </div>
+                <div class="p-4">
+                <div class="flex justify-between text-sm mb-2 border-b border-slate-100 pb-2">
+                    <span class="text-slate-500">触发条件</span>
+                    <span class="font-bold text-slate-700">70k 附近 / 失业率4.4%</span>
+                </div>
+                <p class="text-sm text-slate-800 leading-relaxed">
+                    <strong>市场叙事：</strong>延续“低增就业+低失业”的拉锯。市场焦点将迅速转向周五的 CPI 数据。这可能是最“无聊”但最可能的情景。
+                </p>
+                </div>
+            </div>
+
+            <!-- Scenario C: Weak -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <div class="bg-green-600 text-white px-4 py-2 flex justify-between items-center">
+                <span class="font-bold">情景 C：数据偏弱 (鸽派)</span>
+                <i data-lucide="trending-down" class="w-5 h-5"></i>
+                </div>
+                <div class="p-4 bg-green-50/30">
+                <div class="flex justify-between text-sm mb-2 border-b border-green-100 pb-2">
+                    <span class="text-slate-500">触发条件</span>
+                    <span class="font-bold text-green-700">新增大幅不及预期 / 失业率>4.5%</span>
+                </div>
+                <p class="text-sm text-slate-800 leading-relaxed">
+                    <strong>市场叙事：</strong>就业需求转弱的担忧升温。若同时工资明显回落，将强化“通胀降温/政策空间”的讨论，利好债市。
+                </p>
+                <div class="mt-2 text-xs font-bold text-green-700 bg-green-100 inline-block px-2 py-1 rounded">
+                    利多美债 / 利多黄金
+                </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 机构观点 -->
+        <section>
+            <h2 class="text-xl font-bold text-slate-900 mb-4 px-1">机构与专家观点</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                    <i data-lucide="quote" class="absolute top-3 right-3 w-8 h-8 text-slate-100"></i>
+                    <p class="text-slate-800 text-base font-medium mb-3 leading-relaxed">"在劳动力增长放缓、生产率上升的背景下，未来就业增量可能更小；不应因连续偏低读数而‘恐慌’。"</p>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs">K</span>
+                        <div>
+                            <span class="block font-bold text-slate-900">Kevin Hassett</span>
+                            <span class="text-xs text-slate-500">来源: CNBC / 白宫经济委员会</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                    <i data-lucide="quote" class="absolute top-3 right-3 w-8 h-8 text-slate-100"></i>
+                    <p class="text-slate-800 text-base font-medium mb-3 leading-relaxed">"需求和供给同时下行，使得劳动力市场更难读取；若供给收缩推升工资，政策含义与需求走弱不同。"</p>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="w-8 h-8 rounded-full bg-blue-700 text-white flex items-center justify-center font-bold text-xs">J</span>
+                        <div>
+                            <span class="block font-bold text-slate-900">Jerome Powell</span>
+                            <span class="text-xs text-slate-500">来源: 美联储发布会</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer for NFP -->
+        <footer class="bg-slate-900 text-slate-400 py-8 px-4 text-center mt-8 rounded-lg">
+            <div class="max-w-2xl mx-auto space-y-4">
+                <h3 class="text-white font-bold text-lg tracking-wider">金十期货APP独家整理</h3>
+                <div class="h-px bg-slate-800 w-full my-4"></div>
+                <div class="text-xs space-y-2 text-slate-500">
+                    <p>资料来源：美国劳工统计局 (BLS)、路透社 (Reuters)、MNI、CNBC</p>
+                    <p class="leading-relaxed">免责声明：本看板内容仅供信息参考，不构成任何投资建议。</p>
+                </div>
+                <p class="text-[10px] text-slate-600 pt-2">Copyright &copy; 2026 Jin10 Futures.</p>
+            </div>
+        </footer>
+
+        <!-- Scroll to Top -->
+        <button onclick="scrollToTop()" id="scroll-to-top" class="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-xl opacity-0 translate-y-10 transition-all duration-300 z-50">
+            <i data-lucide="arrow-up" class="w-6 h-6"></i>
+        </button>
+
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODULE 2: FED SIMULATOR (模拟器)           -->
+    <!-- ========================================== -->
+    <div id="module-game" class="hidden animate-fade-in pb-12">
+        
+        <!-- Game Internal Navbar (To navigate game views) -->
+        <div class="bg-white border-b border-slate-200 sticky top-[60px] z-40">
+            <div class="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
+                <div class="flex items-center space-x-2 text-sm font-bold text-slate-500">
+                    <span>驾驶舱模式</span>
+                </div>
+                <div class="flex space-x-4 text-xs sm:text-sm font-medium text-slate-600">
+                    <button onclick="app.switchView('intro')" class="game-nav-btn hover:text-blue-600" data-target="intro">首页</button>
+                    <button onclick="app.switchView('learn')" class="game-nav-btn hover:text-blue-600" data-target="learn">学习</button>
+                    <button onclick="app.switchView('simulation')" class="game-nav-btn hover:text-blue-600" data-target="simulation">实战</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto pt-6 px-4">
+            <!-- VIEW: INTRO -->
+            <div id="view-intro" class="view-section fade-in flex flex-col items-center justify-center min-h-[60vh] text-center max-w-2xl mx-auto">
+                <div class="mb-6 p-6 bg-blue-50 rounded-full">
+                    <i data-lucide="trending-up" class="w-16 h-16 text-blue-600"></i>
+                </div>
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                    美联储主席 <span class="text-blue-600">模拟器</span>
+                </h1>
+                <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                    美国经济就像一辆正在行驶的赛车 🏎️。<br/>
+                    你是驾驶员（美联储主席）。<br/>
+                    你的目标：防止引擎过热（通胀），同时避免撞车（衰退）。
+                </p>
+                
+                <div class="grid gap-4 w-full max-w-md">
+                    <button onclick="app.switchView('learn')" class="flex items-center justify-center w-full px-6 py-4 bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-xl hover:border-blue-500 hover:text-blue-600 transition-colors shadow-sm">
+                        <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
+                        阅读驾驶手册 (学习)
+                    </button>
+                    <button onclick="app.switchView('simulation')" class="flex items-center justify-center w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
+                        <i data-lucide="play" class="w-5 h-5 mr-2"></i>
+                        启动引擎 (开始)
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: LEARN -->
+            <div id="view-learn" class="view-section hidden-view max-w-4xl mx-auto">
+                <div class="flex items-center mb-8">
+                    <button onclick="app.switchView('intro')" class="text-slate-400 hover:text-slate-600 mr-4">
+                        <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold text-slate-800">驾驶手册：经济热力图</h2>
+                </div>
+
+                <div id="learn-cards-container" class="grid md:grid-cols-3 gap-6 mb-8">
+                    <!-- Cards injected by JS -->
+                </div>
+
+                <div class="bg-slate-900 text-slate-300 rounded-2xl p-8 mb-8">
+                    <h3 class="text-white text-xl font-bold mb-4 flex items-center">
+                        <i data-lucide="info" class="w-6 h-6 mr-2 text-blue-400"></i>
+                        “菲利普斯曲线”悖论
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="mb-4">经济管理是一种权衡。历史上，失业率和通胀之间通常存在反向关系。</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="mr-2 text-red-400 font-bold">加热 🔥</span>
+                                    要降低失业率（好事），通常会引发通胀（坏事）。
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2 text-blue-400 font-bold">冷却 ❄️</span>
+                                    要抑制通胀（好事），通常会导致失业率上升（坏事）。
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                            <h4 class="font-bold text-white mb-2">为什么“坏消息”可以是“好消息”？</h4>
+                            <p class="text-sm">有时当失业率<strong>上升</strong>时，股市反而会欢呼。为什么？因为这意味着经济正在降温，暗示美联储可能很快就会停止加息。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: SIMULATION -->
+            <div id="view-simulation" class="view-section hidden-view max-w-5xl mx-auto relative">
+                
+                <!-- Header Bar -->
+                <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center">
+                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></span>
+                            实时数据流
+                        </h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider">FOMC 会议进行中</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="text-xs text-slate-500">场景</p>
+                            <p class="font-bold text-slate-800"><span id="scenario-current">1</span> / <span id="scenario-total">4</span></p>
+                        </div>
+                        <button onclick="app.toggleCheatSheet()" class="text-blue-600 text-sm font-medium hover:underline">
+                            <span id="cheat-sheet-btn-text">显示指南</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cheat Sheet -->
+                <div id="cheat-sheet" class="hidden mb-6 bg-yellow-50 border border-yellow-200 p-4 rounded-xl text-sm text-yellow-900 grid md:grid-cols-3 gap-4 fade-in">
+                    <div><strong>过热 (Overheating) 🔥</strong>: 高通胀，低失业。<br/>操作: <span class="text-red-600 font-bold">加息 (刹车)</span></div>
+                    <div><strong>过冷 (Cooling) ❄️</strong>: 低通胀，高失业。<br/>操作: <span class="text-green-600 font-bold">降息 (油门)</span></div>
+                    <div><strong>舒适区 (Goldilocks) ✅</strong>: 物价稳定，就业健康。<br/>操作: <span class="text-slate-600 font-bold">维持 (巡航)</span></div>
+                </div>
+
+                <!-- Scenario Title -->
+                <div class="mb-8 text-center max-w-3xl mx-auto">
+                    <h1 id="scenario-title" class="text-3xl font-extrabold text-slate-900 mb-3">场景标题</h1>
+                    <p id="scenario-desc" class="text-lg text-slate-600">场景描述...</p>
+                </div>
+
+                <!-- Gauges -->
+                <div class="grid md:grid-cols-3 gap-6 mb-10">
+                    <!-- Inflation -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="p-2 rounded-lg bg-red-500 text-white text-xl">🔥</div>
+                            <span id="badge-inflation" class="text-xs font-bold uppercase px-2 py-1 rounded bg-red-100 text-red-700">过热</span>
+                        </div>
+                        <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wider">CPI (通胀)</h3>
+                        <p id="val-inflation" class="text-2xl font-bold text-slate-800 my-1">6.2%</p>
+                        <div class="w-full h-3 bg-slate-100 rounded-full mt-3 overflow-hidden relative">
+                            <div id="bar-inflation" class="gauge-bar h-full bg-red-500" style="width: 90%;"></div>
+                            <div class="absolute top-0 bottom-0 left-[33%] w-0.5 bg-white opacity-50"></div>
+                            <div class="absolute top-0 bottom-0 left-[66%] w-0.5 bg-white opacity-50"></div>
+                        </div>
+                        <p id="desc-inflation" class="text-xs text-slate-400 mt-2">远高于 2% 目标</p>
+                    </div>
+
+                    <!-- Labor -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="p-2 rounded-lg bg-orange-500 text-white text-xl">⚙️</div>
+                            <span id="badge-labor" class="text-xs font-bold uppercase px-2 py-1 rounded bg-green-100 text-green-700">稳定</span>
+                        </div>
+                        <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wider">失业率</h3>
+                        <p id="val-labor" class="text-2xl font-bold text-slate-800 my-1">4.2%</p>
+                        <div class="w-full h-3 bg-slate-100 rounded-full mt-3 overflow-hidden relative">
+                            <div id="bar-labor" class="gauge-bar h-full bg-orange-500" style="width: 50%;"></div>
+                            <div class="absolute top-0 bottom-0 left-[33%] w-0.5 bg-white opacity-50"></div>
+                            <div class="absolute top-0 bottom-0 left-[66%] w-0.5 bg-white opacity-50"></div>
+                        </div>
+                        <p id="desc-labor" class="text-xs text-slate-400 mt-2">健康的平衡</p>
+                    </div>
+
+                    <!-- Growth -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="p-2 rounded-lg bg-blue-500 text-white text-xl">🚀</div>
+                            <span id="badge-growth" class="text-xs font-bold uppercase px-2 py-1 rounded bg-blue-100 text-blue-700">过冷</span>
+                        </div>
+                        <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wider">GDP 增长</h3>
+                        <p id="val-growth" class="text-2xl font-bold text-slate-800 my-1">-0.5%</p>
+                        <div class="w-full h-3 bg-slate-100 rounded-full mt-3 overflow-hidden relative">
+                            <div id="bar-growth" class="gauge-bar h-full bg-blue-500" style="width: 20%;"></div>
+                            <div class="absolute top-0 bottom-0 left-[33%] w-0.5 bg-white opacity-50"></div>
+                            <div class="absolute top-0 bottom-0 left-[66%] w-0.5 bg-white opacity-50"></div>
+                        </div>
+                        <p id="desc-growth" class="text-xs text-slate-400 mt-2">经济收缩</p>
+                    </div>
+                </div>
+
+                <!-- Interaction Area -->
+                <div class="relative min-h-[160px]">
+                    <div id="decision-buttons" class="grid grid-cols-3 gap-4 max-w-2xl mx-auto transition-opacity duration-300">
+                        <button onclick="app.makeDecision('hike')" class="flex flex-col items-center justify-center p-4 rounded-xl text-white font-bold shadow-lg transition-transform transform active:scale-95 bg-red-600 hover:bg-red-700 w-full sm:h-32">
+                            <span class="text-3xl mb-2">📈</span>
+                            <span class="text-lg">加息 (Raise)</span>
+                            <span class="text-xs font-normal opacity-80 mt-1 uppercase tracking-wide">踩刹车 Brake</span>
+                        </button>
+                        <button onclick="app.makeDecision('hold')" class="flex flex-col items-center justify-center p-4 rounded-xl text-white font-bold shadow-lg transition-transform transform active:scale-95 bg-slate-600 hover:bg-slate-700 w-full sm:h-32">
+                            <span class="text-3xl mb-2">✋</span>
+                            <span class="text-lg">维持 (Hold)</span>
+                            <span class="text-xs font-normal opacity-80 mt-1 uppercase tracking-wide">保持速度</span>
+                        </button>
+                        <button onclick="app.makeDecision('cut')" class="flex flex-col items-center justify-center p-4 rounded-xl text-white font-bold shadow-lg transition-transform transform active:scale-95 bg-green-600 hover:bg-green-700 w-full sm:h-32">
+                            <span class="text-3xl mb-2">📉</span>
+                            <span class="text-lg">降息 (Cut)</span>
+                            <span class="text-xs font-normal opacity-80 mt-1 uppercase tracking-wide">踩油门 Accel</span>
+                        </button>
+                    </div>
+
+                    <!-- Feedback Overlay -->
+                    <div id="feedback-overlay" class="hidden absolute inset-x-0 bottom-0 top-[-20px] bg-white/95 backdrop-blur-sm rounded-xl border-2 border-slate-200 shadow-2xl p-6 flex flex-col items-center justify-center text-center fade-in z-10">
+                        <div id="feedback-icon-container" class="mb-4 p-3 rounded-full"></div>
+                        <h3 id="feedback-title" class="text-2xl font-bold mb-2">标题</h3>
+                        <p id="feedback-message" class="text-slate-700 mb-6 max-w-lg leading-relaxed">信息</p>
+                        <button onclick="app.nextScenario()" id="feedback-next-btn" class="px-8 py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-transform active:scale-95">
+                            下一个场景
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: RESULTS -->
+            <div id="view-results" class="view-section hidden-view flex flex-col items-center justify-center min-h-[60vh] px-4">
+                <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 max-w-lg w-full text-center">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">任期结束</h2>
+                    <p class="text-slate-500 mb-8 uppercase tracking-widest text-sm">绩效评估</p>
+
+                    <div class="mb-8">
+                        <div id="final-score" class="text-6xl font-black text-blue-600 mb-2">0 / 4</div>
+                        <p id="final-rank" class="text-lg font-medium text-slate-700">新手上路</p>
+                    </div>
+                    <p id="final-message" class="text-slate-600 mb-8 leading-relaxed">...</p>
+                    <div class="flex flex-col space-y-3">
+                        <button onclick="app.restart()" class="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800">开始新任期</button>
+                        <button onclick="app.switchView('learn')" class="w-full py-3 bg-white border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-50">回到学习大厅</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC                           -->
+    <!-- ========================================== -->
+    <script>
+      // 1. 初始化 Lucide 图标
+      lucide.createIcons();
+
+      // ===================================
+      // 模块切换逻辑 (Tab Logic)
+      // ===================================
+      function switchModule(moduleName) {
+        const btnNfp = document.getElementById('btn-tab-nfp');
+        const btnGame = document.getElementById('btn-tab-game');
+        const modNfp = document.getElementById('module-nfp');
+        const modGame = document.getElementById('module-game');
+
+        if (moduleName === 'nfp') {
+            btnNfp.classList.add('active');
+            btnGame.classList.remove('active');
+            modNfp.classList.remove('hidden');
+            modGame.classList.add('hidden');
+        } else {
+            btnNfp.classList.remove('active');
+            btnGame.classList.add('active');
+            modNfp.classList.add('hidden');
+            modGame.classList.remove('hidden');
+            // 初始化游戏（如果还没初始化）
+            if(app.state.view === 'intro' && document.getElementById('learn-cards-container').innerHTML === '') {
+                app.init();
+            }
+        }
+        window.scrollTo(0, 0);
+        lucide.createIcons();
+      }
+
+      // ===================================
+      // NFP 模块逻辑 (倒计时 & 回到顶部)
+      // ===================================
+      const scrollBtn = document.getElementById('scroll-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          scrollBtn.classList.remove('opacity-0', 'translate-y-10');
+        } else {
+          scrollBtn.classList.add('opacity-0', 'translate-y-10');
+        }
+      });
+      function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      const targetDate = new Date('2026-02-11T21:30:00+08:00').getTime();
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+        const element = document.getElementById('countdown-timer');
+        
+        if (distance < 0) {
+          element.innerHTML = "数据已公布";
+          element.classList.replace('text-yellow-400', 'text-green-400');
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        const h = hours < 10 ? '0' + hours : hours;
+        const m = minutes < 10 ? '0' + minutes : minutes;
+        const s = seconds < 10 ? '0' + seconds : seconds;
+        element.innerHTML = days > 0 ? `${days}天 ${h}:${m}:${s}` : `${h}:${m}:${s}`;
+      }
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
+
+      // ===================================
+      // GAME 模块逻辑 (Fed Simulator)
+      // ===================================
+      const LEARNING_CONTENT = [
+            {
+                id: 'inflation', title: '通胀与物价 (Inflation)', icon: '🔥', metaphor: '引擎温度',
+                keyData: ['CPI (消费者物价指数)', 'PCE (个人消费支出)'],
+                meaning: '如果温度过高（通胀高），代表物价飞涨，引擎有爆缸的风险。这通常迫使美联储“踩刹车”（加息）。',
+                color: 'bg-red-500'
+            },
+            {
+                id: 'labor', title: '就业市场 (Labor)', icon: '⚙️', metaphor: '引擎转速',
+                keyData: ['非农就业人数 (Non-farm)', '失业率 (Unemployment)'],
+                meaning: '转速越高（就业强劲）动力越足，但也产生更多热量（推高通胀）。转速过低则可能导致熄火（衰退）。',
+                color: 'bg-orange-500'
+            },
+            {
+                id: 'growth', title: '增长指标 (Growth)', icon: '🚀', metaphor: '行驶速度',
+                keyData: ['GDP (国内生产总值)', 'PMI (采购经理人指数)'],
+                meaning: '我们想要车跑得快（增长），但不能失控。速度过慢则需要“踩油门”（降息）来刺激。',
+                color: 'bg-blue-500'
+            }
+        ];
+
+        const SCENARIOS = [
+            {
+                id: 1, title: "场景 1：引擎过热", description: "最新报告出炉。超市里的物价明显上涨。企业正在大举招聘，工资也在飞速上涨。",
+                metrics: {
+                    inflation: { label: 'CPI (通胀)', value: '6.2%', status: 'hot', description: '远高于 2% 的目标。' },
+                    labor: { label: '失业率', value: '3.4%', status: 'hot', description: '历史低位，劳动力短缺。' },
+                    growth: { label: 'GDP 增长', value: '4.1%', status: 'hot', description: '经济扩张迅速。' }
+                }, correctAction: 'hike', explanation: "正确！经济正在过热 🔥。通胀高企且失业率低，你有资本让经济慢下来。加息（踩刹车）会增加借贷成本，冷却需求并降低物价。"
+            },
+            {
+                id: 2, title: "场景 2：动力熄火", description: "工厂订单正在枯竭。申请失业救济的人数增加。物价几乎没有波动，店主们抱怨没有顾客。",
+                metrics: {
+                    inflation: { label: 'CPI (通胀)', value: '1.2%', status: 'cold', description: '低于目标，通缩风险。' },
+                    labor: { label: '失业率', value: '7.8%', status: 'cold', description: '裁员正在加速。' },
+                    growth: { label: 'GDP 增长', value: '-0.5%', status: 'cold', description: '经济收缩（衰退风险）。' }
+                }, correctAction: 'cut', explanation: "做得好！汽车正在熄火 ❄️。高失业率和负增长是衰退的信号。你需要通过降息（踩油门）来刺激经济。"
+            },
+            {
+                id: 3, title: "场景 3：“金发姑娘”区", description: "经济感觉...出奇地正常。物价缓慢而稳定地上涨。人们能找到工作，但企业并不绝望。",
+                metrics: {
+                    inflation: { label: 'CPI (通胀)', value: '2.1%', status: 'optimal', description: '正好在目标附近。' },
+                    labor: { label: '失业率', value: '4.2%', status: 'optimal', description: '健康的平衡。' },
+                    growth: { label: 'GDP 增长', value: '2.3%', status: 'optimal', description: '可持续的速度。' }
+                }, correctAction: 'hold', explanation: "完美！不要修理没坏的东西 ✅。经济正以完美的速度巡航。"
+            },
+            {
+                id: 4, title: "场景 4：“坏消息就是好消息”", description: "股市因就业报告“糟糕”而大涨。因为投资者认为经济正在适度冷却，加息可能停止。",
+                metrics: {
+                    inflation: { label: 'CPI (通胀)', value: '3.8%', status: 'hot', description: '仍然偏高，但在下降。' },
+                    labor: { label: '失业率', value: '4.5%', status: 'optimal', description: '略微上升。' },
+                    growth: { label: 'GDP 增长', value: '1.8%', status: 'optimal', description: '正在降温。' }
+                }, correctAction: 'hold', explanation: "明智。虽然通胀略高，但冷却的就业市场表明加息在起作用。激进加息可能用力过猛，降息又为时过早。"
+            }
+        ];
+
+        const app = {
+            state: { view: 'intro', scenarioIndex: 0, score: 0, showCheatSheet: false },
+            init: function() { this.renderLearnCards(); this.switchView('intro'); },
+            switchView: function(viewName) {
+                document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden-view'); el.classList.remove('fade-in'); });
+                const target = document.getElementById(`view-${viewName}`);
+                if (target) { target.classList.remove('hidden-view'); void target.offsetWidth; target.classList.add('fade-in'); }
+                document.querySelectorAll('.game-nav-btn').forEach(btn => {
+                    if (btn.dataset.target === viewName) btn.classList.add('text-blue-600');
+                    else btn.classList.remove('text-blue-600');
+                });
+                this.state.view = viewName;
+                if (viewName === 'simulation') this.renderScenario();
+                lucide.createIcons();
+            },
+            renderLearnCards: function() {
+                const container = document.getElementById('learn-cards-container');
+                if(!container) return;
+                container.innerHTML = LEARNING_CONTENT.map(card => `
+                    <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden flex flex-col">
+                        <div class="${card.color} p-4 text-white flex items-center justify-between"><span class="text-2xl">${card.icon}</span><span class="font-bold opacity-90">${card.metaphor}</span></div>
+                        <div class="p-6 flex-1 flex flex-col"><h3 class="text-xl font-bold text-slate-800 mb-2">${card.title}</h3><div class="flex-1"><p class="text-slate-600 text-sm mb-4 leading-relaxed">${card.meaning}</p><div class="bg-slate-50 rounded-lg p-3"><p class="text-xs font-semibold text-slate-500 uppercase mb-2">关键数据指标</p><ul class="space-y-1">${card.keyData.map(k => `<li class="text-sm text-slate-700 flex items-center"><span class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"></span>${k}</li>`).join('')}</ul></div></div></div>
+                    </div>`).join('');
+            },
+            renderScenario: function() {
+                const scenario = SCENARIOS[this.state.scenarioIndex];
+                document.getElementById('scenario-current').innerText = this.state.scenarioIndex + 1;
+                document.getElementById('scenario-total').innerText = SCENARIOS.length;
+                document.getElementById('scenario-title').innerText = scenario.title;
+                document.getElementById('scenario-desc').innerText = scenario.description;
+                document.getElementById('feedback-overlay').classList.add('hidden');
+                document.getElementById('decision-buttons').classList.remove('opacity-20', 'pointer-events-none');
+                this.updateGauge('inflation', scenario.metrics.inflation);
+                this.updateGauge('labor', scenario.metrics.labor);
+                this.updateGauge('growth', scenario.metrics.growth);
+            },
+            updateGauge: function(id, metric) {
+                const badge = document.getElementById(`badge-${id}`);
+                const val = document.getElementById(`val-${id}`);
+                const bar = document.getElementById(`bar-${id}`);
+                const desc = document.getElementById(`desc-${id}`);
+                val.innerText = metric.value; desc.innerText = metric.description;
+                let width, colorClass, badgeText, badgeClass;
+                if (metric.status === 'hot') { width = '90%'; colorClass = 'bg-red-500'; badgeText = '过热 🔥'; badgeClass = 'bg-red-100 text-red-700'; } 
+                else if (metric.status === 'cold') { width = '20%'; colorClass = 'bg-blue-500'; badgeText = '过冷 ❄️'; badgeClass = 'bg-blue-100 text-blue-700'; } 
+                else { width = '50%'; colorClass = 'bg-green-500'; badgeText = '稳定 ✅'; badgeClass = 'bg-green-100 text-green-700'; }
+                bar.style.width = width; bar.className = `gauge-bar h-full ${colorClass}`;
+                badge.className = `text-xs font-bold uppercase px-2 py-1 rounded ${badgeClass}`; badge.innerText = badgeText;
+            },
+            toggleCheatSheet: function() {
+                const sheet = document.getElementById('cheat-sheet');
+                const btnText = document.getElementById('cheat-sheet-btn-text');
+                this.state.showCheatSheet = !this.state.showCheatSheet;
+                if (this.state.showCheatSheet) { sheet.classList.remove('hidden'); btnText.innerText = '隐藏指南'; } 
+                else { sheet.classList.add('hidden'); btnText.innerText = '显示指南'; }
+            },
+            makeDecision: function(action) {
+                const scenario = SCENARIOS[this.state.scenarioIndex];
+                const isCorrect = action === scenario.correctAction;
+                if (isCorrect) this.state.score++;
+                let message = isCorrect ? scenario.explanation : (scenario.correctAction === 'hike' ? "小心！经济过热，需加息。 " : (scenario.correctAction === 'cut' ? "注意！经济熄火，需降息。 " : "不需要激烈行动。 ")) + scenario.explanation;
+                this.showFeedback(isCorrect, message);
+            },
+            showFeedback: function(isCorrect, message) {
+                const overlay = document.getElementById('feedback-overlay');
+                const iconContainer = document.getElementById('feedback-icon-container');
+                const title = document.getElementById('feedback-title');
+                const msg = document.getElementById('feedback-message');
+                const nextBtn = document.getElementById('feedback-next-btn');
+                document.getElementById('decision-buttons').classList.add('opacity-20', 'pointer-events-none');
+                if (isCorrect) { iconContainer.className = "mb-4 p-3 rounded-full bg-green-100 text-green-600 inline-block"; iconContainer.innerHTML = `<i data-lucide="check-circle" class="w-8 h-8"></i>`; title.innerText = "决策英明！"; title.className = "text-2xl font-bold mb-2 text-green-700"; } 
+                else { iconContainer.className = "mb-4 p-3 rounded-full bg-red-100 text-red-600 inline-block"; iconContainer.innerHTML = `<i data-lucide="alert-triangle" class="w-8 h-8"></i>`; title.innerText = "决策风险！"; title.className = "text-2xl font-bold mb-2 text-red-700"; }
+                msg.innerText = message;
+                nextBtn.innerText = (this.state.scenarioIndex < SCENARIOS.length - 1) ? '下一个场景' : '查看结果';
+                overlay.classList.remove('hidden'); lucide.createIcons();
+            },
+            nextScenario: function() {
+                if (this.state.scenarioIndex < SCENARIOS.length - 1) { this.state.scenarioIndex++; this.renderScenario(); } 
+                else { this.showResults(); }
+            },
+            showResults: function() {
+                this.switchView('results');
+                const score = this.state.score; const total = SCENARIOS.length;
+                document.getElementById('final-score').innerText = `${score} / ${total}`;
+                let rank = score === total ? "传奇主席 🦅" : (score >= total / 2 ? "稳健掌舵人 ⚖️" : "新手上路 🎢");
+                let msg = score === total ? "你成功地引导经济度过了难关，美元在你手中很安全。" : "管理经济需要平衡，建议复习“驾驶手册”。";
+                document.getElementById('final-rank').innerText = rank; document.getElementById('final-message').innerText = msg;
+            },
+            restart: function() { this.state.score = 0; this.state.scenarioIndex = 0; this.switchView('intro'); }
+        };
+
+        // 初始化游戏部分
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+  </body>
+</html>
